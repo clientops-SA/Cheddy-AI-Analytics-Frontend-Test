@@ -41,13 +41,12 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Render the static webapp_prototype inside an iframe component. Streamlit
-# Cloud serves the file at /app/static/index.html thanks to
-# enableStaticServing = true in .streamlit/config.toml. Relative URLs
-# inside index.html (script src, link href, REPORTS_BASE_PATH) resolve
-# back into /app/static/, which is exactly what we want.
-st.components.v1.iframe(
-    "./static/index.html",
+# Render the static webapp_prototype inside an iframe component. The URL
+# MUST be "/app/static/index.html" (absolute) — not "./static/index.html"
+# — because Streamlit's own SPA shell lives at /static/, and a relative
+# "./static/" path collides with that. Pointing at /app/static/ uses the
+# enableStaticServing-exposed user directory instead.
+st.iframe(
+    "/app/static/index.html",
     height=1600,
-    scrolling=True,
 )
