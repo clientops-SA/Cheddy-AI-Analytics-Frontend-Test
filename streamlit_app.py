@@ -41,15 +41,25 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# Render the static webapp_prototype inside an iframe component. The URL
-# is "app/static/index.html" — RELATIVE, no leading slash — so it works
-# in both contexts:
-#   - localhost:8501/        → app/static/...  →  /app/static/index.html
-#   - private cloud /~/+/    → app/static/...  →  /~/+/app/static/index.html
-# An absolute "/app/static/..." would bypass Cloud's private-app /~/+/
-# prefix and hit the unauthenticated auth gate (303 → 404).
-# A "./static/..." would collide with Streamlit's own SPA at /static/.
-st.iframe(
-    "app/static/index.html",
-    height=1600,
+# Embed the static webapp_prototype via raw iframe HTML so the browser
+# handles URL resolution directly. We can't use st.iframe() with a bare
+# relative path ("app/static/index.html") — it treats it as plain text.
+# We can't use st.iframe() with an absolute path ("/app/static/...")
+# either — on Cloud private apps it bypasses the /~/+/ auth prefix and
+# 303-redirects to the login gate.
+#
+# Solution: emit raw <iframe src="app/static/..."> markup. The browser
+# resolves that relative to the parent document URL, which is "/" on
+# localhost and "/~/+/" on Cloud private — both land on our static
+# directory without any auth-gate detour.
+st.components.v1.html(
+    """
+    <iframe
+        src="app/static/index.html"
+        style="width:100%; height:1600px; border:0; display:block;"
+        allow="fullscreen; clipboard-read; clipboard-write"
+        loading="eager"
+    ></iframe>
+    """,
+    height=1620,
 )
