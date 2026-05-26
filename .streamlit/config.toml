@@ -1,0 +1,18 @@
+[server]
+headless = true
+enableCORS = false
+enableXsrfProtection = true
+# Serve files placed under test_deployment/static/ at /app/static/<path>.
+# This is what makes the embedded webapp's relative URLs work and what
+# makes the 5 sample reports openable via the View/Download buttons.
+enableStaticServing = true
+
+[browser]
+gatherUsageStats = false
+
+[theme]
+primaryColor = "#C8102E"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F5F5F5"
+textColor = "#262626"
+font = "sans serif"

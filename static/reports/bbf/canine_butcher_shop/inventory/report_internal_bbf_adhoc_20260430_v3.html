@@ -1,0 +1,2158 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>CBS Inventory Management Report — 2026-04-30</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue:#557CF8; --blue-tint:#DBE4FF;
+  --orange:#F19E39; --orange-tint:#FFE3C1;
+  --gray:#EDEDED; --black:#1A1A1A;
+  --body:#333333; --muted:#999999; --white:#FFFFFF;
+  --good:#1a8c2e; --bad:#c8242a; --warn:#b3700a;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Inter','Poppins',Arial,sans-serif;background:var(--gray);
+     color:var(--body);font-size:13px;line-height:1.5}
+.page{max-width:1440px;margin:0 auto;background:white;min-height:100vh}
+
+.cover{background:var(--blue);color:white;padding:36px 48px 32px;position:relative;overflow:hidden;
+       display:flex;justify-content:space-between;align-items:flex-start;gap:32px}
+.cover::after{content:'';position:absolute;right:-120px;bottom:-120px;width:340px;height:340px;
+              border-radius:50%;background:rgba(219,228,255,0.16);pointer-events:none}
+.cover-text{position:relative;z-index:1}
+.cover .pill{display:inline-block;font-size:11px;text-transform:uppercase;letter-spacing:2px;
+             background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.5);
+             padding:5px 12px;border-radius:18px;margin-bottom:18px}
+.cover h1{font-size:38px;font-weight:700;margin:0 0 8px;line-height:1.05}
+.cover .sub{font-size:15px;color:var(--blue-tint);max-width:680px}
+.cover .meta{margin-top:22px;font-size:12px;color:rgba(255,255,255,0.72);display:flex;gap:18px;flex-wrap:wrap}
+.cover-logo{flex-shrink:0;position:relative;z-index:1}
+.cover-logo img{max-height:54px;width:auto;display:block}
+
+section{padding:30px 48px}
+section.alt{background:#fafbff}
+h2{font-size:20px;font-weight:700;color:var(--black);margin:0 0 14px;padding-bottom:8px;
+   border-bottom:3px solid var(--blue);display:flex;align-items:center;gap:10px}
+h2 .count{font-size:12px;font-weight:600;color:white;background:var(--blue);
+          padding:2px 9px;border-radius:10px}
+h2.warn-title{border-bottom-color:var(--orange)}
+h2.warn-title .count{background:var(--orange)}
+.note{background:var(--blue-tint);border-left:4px solid var(--blue);
+      padding:10px 14px;margin:0 0 14px;font-size:12px;color:var(--black)}
+.note.warn{background:var(--orange-tint);border-left-color:var(--orange)}
+
+.kpis{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
+.kpi{background:white;border-radius:8px;padding:14px;border-top:4px solid var(--blue);
+     box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.kpi.alert{border-top-color:var(--bad)} .kpi.alert .value{color:var(--bad)}
+.kpi.warn{border-top-color:var(--orange)} .kpi.warn .value{color:var(--warn)}
+.kpi .label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600}
+.kpi .value{font-size:24px;font-weight:700;color:var(--black);margin-top:4px}
+.kpi .sub{font-size:10px;color:var(--muted);margin-top:2px}
+
+table{width:100%;border-collapse:collapse;background:white;font-size:12px;
+      border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+thead{background:var(--blue)}
+thead th{color:white;padding:8px;text-align:left;font-weight:600;font-size:11px;
+         text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap}
+tbody tr{border-bottom:1px solid #f0f0f0}
+tbody tr:hover{background:#fafbff}
+td{padding:7px 8px;vertical-align:middle}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+td.mono{font-family:'JetBrains Mono',Consolas,monospace;font-size:11px;white-space:nowrap}
+td a{color:var(--blue);text-decoration:none}
+td a:hover{text-decoration:underline}
+.bad{color:var(--bad);font-weight:600}
+.warn{color:var(--warn);font-weight:600}
+.good{color:var(--good);font-weight:600}
+.muted{color:var(--muted)}
+tr.row-overdue td{background:#fff5f5}
+
+.pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:600;
+      text-transform:uppercase;letter-spacing:0.4px;white-space:nowrap}
+.pill-bad{background:var(--bad);color:white}
+.pill-warn{background:var(--orange);color:white}
+.pill-good{background:var(--good);color:white}
+.pill-info{background:var(--blue-tint);color:var(--blue)}
+.pill-muted{background:#e8e8e8;color:#666}
+
+.flag{display:inline-block;font-size:10px;padding:1px 6px;margin:1px 2px 1px 0;
+      border-radius:4px;background:#f1f1f1;color:#555}
+.flag.fbad{background:#fde8ea;color:var(--bad)}
+.flag.fwarn{background:var(--orange-tint);color:var(--warn)}
+
+ul.actions{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px}
+ul.actions li{background:white;border-radius:6px;padding:8px 12px;display:flex;
+              align-items:flex-start;gap:10px;font-size:12px;border-left:4px solid var(--blue)}
+.action-pill{background:var(--blue);color:white;padding:1px 8px;border-radius:9px;font-size:9px;
+             font-weight:700;letter-spacing:0.4px;flex-shrink:0;min-width:62px;text-align:center}
+
+ul.po-lines{margin:6px 0 0;padding-left:16px}
+ul.po-lines li{padding:1px 0;font-size:11px}
+details summary{cursor:pointer;color:var(--blue);font-weight:600}
+
+.scroll-x{overflow-x:auto;border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.scroll-x table{box-shadow:none}
+
+.spark{display:flex;align-items:flex-end;height:90px;gap:2px;background:white;padding:14px;border-radius:8px;
+       border-top:4px solid var(--blue);box-shadow:0 1px 3px rgba(0,0,0,0.05)}
+.spark .bar{flex:1;background:var(--blue);min-height:2px;border-radius:2px 2px 0 0;transition:opacity .2s}
+.spark .bar:hover{background:var(--orange);opacity:1}
+.spark-labels{display:flex;justify-content:space-between;padding:4px 14px 0;font-size:10px;color:var(--muted)}
+
+.arrival{display:flex;gap:8px;align-items:center;font-size:11px;padding:1px 0;white-space:nowrap}
+.arr-date{font-weight:600;color:var(--black);min-width:78px}
+.arr-qty{color:var(--good);font-weight:600;min-width:50px;text-align:right}
+.arr-add{font-size:10px;min-width:34px;text-align:right}
+.arr-po{font-size:10px;font-family:'JetBrains Mono',Consolas,monospace}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--muted);margin-top:6px}
+.legend .swatch{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:4px;vertical-align:middle}
+
+.toolbar{display:flex;gap:6px;margin-bottom:10px}
+.tab{padding:6px 14px;background:white;border:1px solid #ddd;border-radius:18px;cursor:pointer;
+     font-size:11px;font-weight:600;color:var(--body);user-select:none}
+.tab:hover{border-color:var(--blue);color:var(--blue)}
+.tab.active{background:var(--blue);color:white;border-color:var(--blue)}
+
+.footer{padding:18px 48px;background:var(--black);color:rgba(255,255,255,0.7);font-size:11px;
+        display:flex;justify-content:space-between;align-items:center}
+.footer span.brand{color:var(--orange);font-weight:600}
+</style></head>
+<body>
+<div class="page">
+
+  <div class="cover">
+    <div class="cover-text">
+      <div class="pill">Inventory Management Report</div>
+      <h1>Canine Butcher Shop</h1>
+      <div class="sub">Inventory health, purchase order pipeline, sales velocity, traffic, listing alerts and recommended actions.</div>
+      <div class="meta">
+        <span>Snapshot: 2026-04-30</span>
+        <span>Lead Time: 80 days (VLT 59d + OLT 21d)</span>
+        <span>51 SKUs / 22 active</span>
+      </div>
+    </div>
+    <div class="cover-logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfQAAACuCAYAAADAtP+vAAAACXBIWXMAAAcEAAAHBAHVcLm9AAAbjklEQVR4nO3du27kWH7H8d/YhmEbMCRfM0N06qRrM2fNcaDIQMuA01Wz4cDhaIIVNjG6OlUy6idotl7A6nCVDPUEW3oCU28gZXZg08HhmaKoc3gni8X6foBCq1lV5Cne/ufO77IsEwAA2G9/sOsEAACA/gjoAAAsAAEdAIAFIKADALAABHQAABaAgA4AwAIQ0AEAWAACOgAAC0BABwBgAQjoAAAsAAEdAIAFIKADALAABHQAABaAgA4AwAIQ0AEAWAACOgAAC0BABwBgAQjoAAAsAAEdAIAFIKADALAABHQAABaAgA4AwAIQ0AEAWAACOgAAC0BABwBgAQjoAAAsAAEdAIAFIKADALAABHQAABaAgA4AwAIQ0AEAWAACOgAAC0BABwBgAQjoAAAsAAEdAIAFIKADALAABHQAABaAgA4AwAIQ0AEAWAACOgAAC/BHu04AAABzc355F0ha5S9rIym5uTp92kmianyXZdmu0wAAwCycX96FktaS3lZ87F7S+ubqNBk/Rc0R0AEAkHR+eXct6YcWX7mXFN1cnabjpKgdAjoA4OCdX97Fkt53+OqzpLM5lNbpFAcAOGjnl3eRugVzSTqS9HO+jp2ihA4AOFjnl3fHklKZwFz2VVJc+P+ZpMjzWUn6fpcldQI6AOBgnV/erSV9LC1+lhTeXJ1uHJ8/lgny7xyre5a02lWbOlXuAIBDFjmWXbiCuSTdXJ0+3Vydnkn64Hj7SC9L9JOihA4AOEj5WPP/Ki1+vLk6DRp+/0LST463Ptxcnca9EtcBJXQAwEH6p3/8u38vL/vbv/qzm6bfv7k6vZb0zfHWdV41PykCOgDg0BxLSo7+/I9/W37j3/71H/5D7mp4n0im7bzoSNJF18R1RUAHAByaW3lmgvubv/xTSfoi06O9Vj4NrCt4Rx3T1hkBHQBwSCLlwfx//y/7n/Kbf/0Xf2r/jJuuMG8vfywtPpl6bDoBHQBwSH4pef/JH//hdem9+/wlmWrzsMV611XbmgIBHQBwSOzT057/+fu//62k7yV9kvSjTAAuBvmw6UrzUnq5Lf3dlJ3jeHwqAOCQFANscnN1WnzvrPR+W7d6PYXsmSYamz5WQI/kGawv8zxZHI5rvXyesBV6Ph/p5bnzJFOVNZfz5lju35PmL+y/Y5lzMNTLm/uTzHm4kblxj2Gl+ZzrS5XIzPJ2pOpHpErtj7MroIfa84AeyL2jJh+Xh51bqf6isXyPLgzz1xxudCtJPzuWf5K7DQ3741jmGFY9PtNO9/ndyNu9l8lUpANuB0akil7uuWd1KIDeXJ3enl/elReHbdbRB23omItj+W+kOxnTiYNyLFNya/Ms7KG4MrJvNV4twKF7kgmy32nbAa7MztfeRXmdJ1O1oxPQMReuauyiYIpE4GAlkt40/OzDwNv2PbbzjSYs3WEwiWNZ3f1tEAR0zMVTzfuUVjCWSNXB/EEvhzPVnatthDXvTxIIMChXNX04xYbp5Y652MjcOH03VgL6YVjp5bAhK9Z4HYt8zTkPMj2U09LyIYNsUvP+HPqNoB3XMaPKHQcn0uvZliRTMkonTQl25Vim/bj8CkbcnisT+SxTqkod7w0dZD97lj+oPuBjZjzPQqfKHQdnI3Pj/lVpeTx5SnAofDfaWw1btV7lQmaUhM3MPkv6KtrP95mrYDI6qtyxD6hux1gCz/J0wjRIZtjaeuJtYryScyrppPD/pkN3e6GEjjkqXmRfNV1JCYcn8CxPJkwDdiOQGRK7GAR0zFFQ+JvSOYAxRCOueyeFEAI65ijM/30WAR3A8CJJHxt8bqVuPdR3MjphDm3oxzJDQ1Z63Z5h501O1K1NK/QsTwp/B/n2Q20PXCoTSHzBJMxfgV5X2RXne07UPqfmO4E2jnXZdJf3W6Lh55te5dsL9PI329+baLhqSrv+uMFn7bkTlpZvZI5jovkM/TmW+W27SE8o9zk0tJXMfqeZ5LVQu6vKDzXN8a/afjLx9uy9qbw8kn8yn6KVpN/LFCwC7cE5vcuAHsh0AqnascWOBN9kxqcmLbbhmnNb2s7DvJY7l2aHyRQDYiQTPN45Pl9mP2NLmGs1z5Bcy92B4nttf3uUr/PE8TkVvv+Yfy5uuO2yY5keuFHFtiTzez8OsD0raJiuC/nbwIr7cKh0tRVpm+lypfNe5oZzrWE7YZ1pm9FxDcl61DbDF/fcVqT635jk20kd74d6mRkLPNsJ5e805lvuW09Y+r9LVPHeWiadkeO9VNt9audoP9PL68fOE24/51tXom5B0B6PUPXHv21v/kjuYxTr5fE903Yfls+LR23PiaTFtn3CfFu+872rdf6vnXp67f3kXGRZNsZrnbmFNe83cZ1l2XHDdPgoy7K4ZjtJvp11lmVPPdKb5d+PGqRX+XZdwjw9vverxA23XXyFWZalHbaVZVm2ybJslVX/nq7n1ipff990dX2FnnWvC5+Jsvb7LsmyLOiZti7bfSqlvenrbKDf2OdeYLVJ91Db850HSbY9T6vuG8V93uScmsvx913PYdbt+kyy5vfzIc7Bpsq/1R7XRq9f/+Z361//5ndZ8dXxN7Z67aINPVaztgufH2RydX1m3jlTfZVLKpPz+6j+PSGPJH1Rv04Y9uERXYY/vJd79i2fSKZ2o6pUXuWNTFqHHhJyLFOi6JoLHytdRbHMsW67795K+i91O0cCmd/VZbtHMuf4Rs33y4Wk/+ywrbf5dqKW39s3K5njMVUPantvmOr4uzzJHNdE7a7Pt2p/P7cPTulyDjaVqd9Qs0lmhiubOqBfqFnbRR17Y+660+IGn0llgkfVBAF2jufPejnXs88XmcxEF2v1q076Qc0u2EgmnX0dqX/Gq+xa/gv4XmZyjk/5388V6RpLrP7n9xe1qwZfydyM+45zbZrZOZP0U4/t2MztJDNn7Uis+vMsGWhbts/CVMe/yhd1u77eqHl/H5t5GSKOjGkn5/fUbeiu9uevMgfTdmKSth29LuS/gb+RuXC6BMjySWenWHzS6w5Wa20DnG0Tr+owV9e+G6tbB4tyMC/vt1Am7WvPdqVte7jPSvXBvM3xOnKku6tA7ovYN9+28uUXenmz+6RxOqVFqs5sFNXdfN9r27Zepa4k+E3mWKWFZYFMWl1psJmwQP7zM/Yst+eF/V4gc16cOdL3oPl0VBzaJBOI5MY6/jaT0Ibrfvis7XE+VvW94K2adZxrUkNX3G6TbTfRNMOxWyPV5Tdpp0qyZm2GF1l1W1RU8d06abZt+ym/imlL89/Upq2nqg2tKs2+NirrKatuBz7OqtuwqtJc9b1NNszxapIO1yvyrKfJMYnyNG06bLf8Chv8tiwz50zkSd9x1qy9s+txbtJXIMz8xynxfOfM8/mq89nVD6WYtiBPi31deLYRlz5XfLU5fuXtxZ7tXdRsr+l5kGRm/9jvRlmW3Zb2gW9d65rf0vf4+84/3/FX1qwPT5K5j0uQmd/uc1uT5nXH7dptl8/DKuvM9Nf676xDO/+vf/O7p1IbetU+Hew11orrdnzccn1VwTGt+F6VNOveGaPpK/Jsu+rgJhVprgvmxZPXJ2yZ1iwb9nhZQ5xTVfvRlaa+HeKUNbuRt9lfccV6qn6fa39kmbmZNz2vjzP/Tf2s4TabZpKC/LPrms/59m/d97q+fPsx7JjOoqhhGrr85rGPvy/tSc1vbnLuV53zvrQHWfeCnes8rNPrvCp3iJsqoO+iU9yD/I8r9KnqSHOibtXukcYfVxjL3QbftVruWs2qKlOZ6jYXX9tO5Fn+qGGP15CCFp/daJpq3q9q99uj/DsuthqyLJC7Y6l9QljT8/pJ/mtn7VjmSkvTfZqqeujZ0vyo8YZJ2ma9siGPf9trXjL39qjB56rW7bs/VQ1R/aDm+zqV2UcPDT/f2vnlXehYnIy1vaJdBPQLdQukt/J3OotarmvKxxL6ttOl00Sbnuq+G62rk1ogfyYj0vDHaygnmleP6Ud1S08kf+dL183Pt40u19ZG7gzFG7knTSoLW2xr7Az0XDyq3bXaViR3cLvWsMe/7T2qaSbgScMVOD6rfcbJ9sgfi+s3pCNu7xdTB/S+gdR3kYQt1zNlB4fUs7xt7+9vanexJp7lrpMt9HzWTgDR1ZA3tcSz3PYKDwbcVlddSjXW2rPc1ZE0cix7VvcSoe84lUtvrkziSb7dnQzTmakxg7nkP/5dt7v2LG9T89n2XtGmwOHqWGmtW2yzvH1fzVhfoWd7o5s6oPcNpLdyD0c6UrvcZNIzHXUCvZwedghDnRCuC8a37+Ke2xoy45TIX4p9LzOG+1bm4t9FcHlUv98byz/ULiz8Hcjdmz7pse2N3Ps2LP3ftw3bKz8SgV0at8Dg67GdqHsNSCr38W9zT237m5MWn/Wlo++TGOMe360Slv7/fHN1OklAn3rYWjLAOjZyVw+3uZH02bkrbafVPPakZQxjnhC+CyYZYN33Gm4fXchMJuHzLn81GV44tGSAddzKPTQvLKw/8Hz3Se1rqsrfL2cUytdUIlPL5gooJzK1Jdeaft/PybPGrV71XatTHP8qY96fQs/ypOd6E5njNdjcFOeXdyvH+pKh1l9n6oA+xEH3BfSgxTq65OoiVc+fPrZ9bX9MNVxAv5XpAFM3Vv5IJjC+lyl5xOrWvtjGEOd22uAzoWe5/b1ji1Q99rm4723GqmlnziUY+3f6AvoYx79NCT0deNtNDLGvXZnoPn1/Is82JjF1lfsQN1TfOoIB1u1yLHPidJlWcd8lA6wjHWAdRbHMg2qqZvArOpHpEZ6qXwmmzlCZVZdggHUPZSOzH33NA0U2uP9e5lwKx0rUAZmySWOqqWvr+AoEQ1xzF3oZwO/VfTZPeb6b9FhfK3N4fOqc2WBeF8gf9TJwJYW/Q007e9SQVup/0YxxA0q0nfHqQs1mgTqSmZ++zRCXqU2dWe1qo+3TEn9o+J23Mvv/s/p1HsR0xh6lMgd9myp+kQ9XK8eKh5ur03SI9TcxdUAP1T+3EnqW912vy638wdxOdVlXnbLW/gb0IYJx26EvbcTa9nA/kwnwdcH9i8YZkz7mvkoafLecqRxC1T560vaRkpGa7XtpmwEgqA9r6uM/JV8797Hm1RQZOZbFUyZg6oAezGQdTazkD8RzLuV14bsoVuqfURozoFupTDvttV6W3KuGuvSpVnNZqX9bWZNMge9YxdrNpC1Pernvm2SsfpDZV8m4SVukuR3/Kfj6TQ1xfzrT9qFPj/n/W2dkzi/vArn7MMQ90tba1G3ofW+iK/lLzEnPdZf50vpJywrmkv8EHuJ4Td0Ol8rc2AL5x5m+0/BNAeEA6/Dt77Tw95zb2VOZm+NK0q9UPc53PUF6lsh3/KfIOO9K6lne9zcfy9zLbUw5Ufc4snYs+3pzdTppDcLUAf2d+t14fNV0Y0zjF3qWL3EoTuJZ/lbjHK8pPMmUFNvOSNXVW/XLJATyl2o3nr+Lwh7bHsNGZv9/8Ly/r81Qu7Yvx39IiWd53/vLmV4XONrOaVJVOr/ulqzudjH1a9cfuZJ/WEbccZ1dzKVdaUiJ/L2W447rrDpeXQUdvjPlRdXnBhN5lj/q5Tn3JHcGtuszDcYWy3SEcwmnS8Zi+I7/keY1DfKQfIWovuf82rM8HWA991NNJlO0i4D+Tu1PPFs14jNlqbltyS4cIxEj8AW+t2ofqOqOVxe2x3008HqH9FHdSv4ruR+2IrnP7djz2XWHbbcVdfjOENfnlMO15i72LF9PmIYpPcnffBOr27mxlrv5ttXsc3nPdlfBZd0hTb3tIqBLpqfxuuFnA5kSpK868qvGmdTAl7tqE9xi7U/V4rX8pfSfNNzx6uJYJigcqd25I/kzVGPlnm/VriahrmOPK6PlC5Bv1C8jdeHZXjEtdu78NgLP8jbHYMltxG3Fcl+rdl79ri56fn9MvvPySOb6aRPUI/kz0HGL9UjudH27uTpNWq5nELsK6JLZoVUlrkDmxr2RPzg8a7x22sSz/L3qSyk2AE0xc9dQbG9lnyGOV1eJXuam7UQxvrRYodwX7oPGG+5yIrMPmlQFnql61jVfZjWV6Zzp8l7tb0phno6fZHqgu66pSNshZ3bu9qZB1rW+R7mPge+4vG2xvaWrulbt8W8T4EJtj/97zXNI4Ub+pps32k54VGct/0yTX9WiU9z55d1a7nvdzvbfLp62VvRGZudmMjvSvlKZh218VHUv6Ujj3Zhv5Z+NzJZSyjeYlcwJk8r9lKy5W6t6Mokux6vJjGJVArlLeHbu8FTm5nam7QNxIpnj97NnnWO3qx/JzDm/kbm4w8J7Yb5sk3/Gd37XZVavVf2wmlTVD0sJtJ3G9We9rEn6SS/P7ZVe3wTfyMwAF8sfaAOZ4+C66flqGapK7bfaPnwnyP+OKz6/ZNfydwZu8rCcYzU//nOxlv83n8j8jkTmd4X58iD/+1rmmvCVzB/VIhDnVe2udX2aciKZsqnHoUfyl0jaVk1/0Pht5xfyPwyk6dzJg07+PwFbaqwrZTc5XraE6buImkhljoMvV30iU3JsOmPZg8YJAl/1+nx4I3Nz7OJM1ZnVJ1WX8G2G54te10gEqp/98ELbGpBU/vO4OGf+Jn8dy9xEq2rWqjJV3+TOEJ/IfT1GjmVL96Tq+2nf47/W/DpZ2nN+I/899a3ax5Jn1V9vvzi/vLM1sGUPN1en65bbHtTUJXRbLdKn1Pas6SZ2uZV/2E0T+zjN5ZPMMfIN92rqq4a70cYy45r7lvYfNF4nxVjDPF/Znt9Jg882vZ7eaHuje6v6m/k3vTxv7TlRNX/+iUwQ/iiTuarKEF6out9LXJM+GGMe/6hn2saSytQeDDVU+VlmH7bpz5HInaGI+ienn120oW9kcohdAsa9zMGMB0xPnVjSv6hdMHnMv1N345ormxP+oPZB9FnSjxr+5LbnTdeg+Vnmwh2riUYyv/nHHt9/lElj3OI7ti17iHm3bWbCVVqx2+mb0WuSGb9Vu+McdE3MAgx9/H9Ui9LqjqQy14mvTb2pe5lzp3EwP7+8i+XOrH7axTC1srGq3FNVn2A2YIQyN8Ez+atQHmVyRNdq3zN5qIcL3Moc+AuZtPpKH7Y6N9b2gnjypMN3wfh+Y9sLzLfdNvsw1rbd8kzV/QJcv12qPxfasNWMazWbYvRR28d3pgOloc61tudr06o/WwV9rW430lTba2mt9k8F9B27suJ1u1a7qs17bfsONGFrCJo0awXaz4zzUFL1O/6PMuderHkH8qInmXPkNv+3TZ+le5n9lLTZYB7MXefjt11XtVvfZVm26zRYgV7ntDea5wl2rNedRuaa1qGt9LqjTbKDdBSFjmVjHQ/Xsfdtb6VtAAy0vdE+a9venGj4viDF7R7rZabHPsQjzbd/q+7BcKVtR8SgtJ2HfL1Jz22EMoFqVVj/kPsvkLuEX3f++M6DJ7UvePjWlarbfmtz/BO1Hz5Yvv6l9tfb0L850MtzcSVTSCz+3kTbTrytVATzB0nh1FO8+swpoAMAMCsVwfxZ0mqXvdrLeB46AAAleW/2RO5mvWeZknk6ZZrq7HJiGQAAZicfZ56qOpjvvBNcGQEdAIBcPgPcz3J31J5tMJeocgcAwJbKr1U9iulsbtXsRQR0AMDByp9nvlb1EMlvkqK59Gb3IaADwMjOL+/scK9A22Fy5SFg5SFmLq4HC6V6ORQryf99mmvV8Bw0DOSSmTRmPXZ6hsCwNQAYSB4kVtqO0Q/UfqKXMdiMQFp+zbkKeQx55upC9YH8QaZUvjeZIgI6AHSUB4ew8NqnBzEV2YCfaDs5zmKCfT4E7UwmkDd5vPPelMqLCOgA0ML55Z2dCrlqyuoludfL2db2ItDntSWh6qetLrqXKZWn46RqXAR0AKiR94CONF4Qd7WNV7FTm+7SvfKSfP7vZpedxgoB3E5926ap417S+ubqNBk6XVMioAOAQ15NeyETyPu0g9vA91T4d9AOa3kwC/L/FudJtx3vmnS4G8q9Xv5W+zsHCfh55krazlW/UvtnoFvfJF3veyC3COgAUNCi97OPfcpfcnN1OvSDd3rJMyk2yBf/DTRt5z370JSmugZs37ZvZQJ5mzTMHgEdANQ7kD9rGyT2pld0Wd7JL9A2yAcaNpjuij0+t3PLZA2JgA7goBWq1j92+PqjTCbgdu6TjvRRqNIPtQ32U1Xhd3Wv/PG6+5zJaoOADuBgnV/eRTLTfbbtYPYsUxpfD52mfVIq0dsq/F2U6B+Ud8yTaatPdpCGnSOgAzg4eYkzVrfgM/s5veeg0HmtOCNeWPpY3f4vt7X/0qlQCxsrPwQCOoCDcn55dyFTTd5l2NfXm6vTaNAEAQNhLncAByFvK79VdanwQf624b2cPQyHg+ehA1i8vK03lT+YP0v6oO2Y6bLPBHPMHQEdwKLlHd8S+avYP8t07HqSe8ja15ur04sx0gYMiYAOYLHyYP5F7mD+LOn7QrCOHZ95kBnSBsweAR3AIhWCucs3SUFheJNr6NqzTG/2xY4vx7LQKQ7A4tQE8xed2/LhVa6q9jVDorBPCOgAFqUmmH+4uTqNS8vK/5ek+5ur0+sBkwWMjip3AIuR92b3BeJXwTwfk15+KMmzzBPWgL1CQAewCIVx5q4OcK5gfiwzwUzZ4p7ChcNAQAewFLHcjwB1VbPbz5eD/yPjzbGvCOgA9t755d2ZpHeOtz67gnneEc71eYaoYW8xlzuAvZZXnad6Xdq+v7k6DT2f3+h1af7bzdXp2RhpBKZACR3AvlvLPYY8qvi8qyMcpXPsNQI6gL2VPwb1B8dbF66ObXlVu+vzdITD3iOgA9hnrlL1vafd/Fie6V3pCIclIKAD2GeRY9na89m13L3gXesA9g4BHcBeynu2uzrCJZ7PuqraP91cnfoemQrsFQI6gH3l6pEelxfk7eyvlouqdiwMAR3Avgocy26L/6mYPY7pXbE4BHQA++pt6f/3jkedXkt64/jumqp2LA0BHcAinV/exXI/FvUrT1LDEvH4VABLEUi/VLNfyx3MH8QEMlgopn4FsJfOL+8Sva52/yZpJffwtGdJKyaQwVJR5Q5gX906lr2TP5iHBHMsGQEdwL6KZQJ1HRvM6QSHRSOgA9hLeY/2UNVB/UGmmp1gjsWjDR3AXju/vFvJdIIrtqc/SoqZOAaHhIAOYBHy3u0rSRvHeHRg8QjoAAAsAG3oAAAsAAEdAIAFIKADALAABHQAABaAgA4AwAIQ0AEAWAACOgAAC0BABwBgAQjoAAAsAAEdAIAFIKADALAABHQAABaAgA4AwAIQ0AEAWAACOgAAC0BABwBgAQjoAAAsAAEdAIAFIKADALAABHQAABaAgA4AwAIQ0AEAWAACOgAAC0BABwBgAQjoAAAsAAEdAIAFIKADALAABHQAABbg/wHxpWS1WbbokAAAAABJRU5ErkJggg==" alt="Brand's Best Friend"></div>
+  </div>
+
+  <section>
+    <h2>KPI Scorecard</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="label">Total SKUs</div><div class="value">51</div><div class="sub">22 replenishable</div></div>
+      <div class="kpi"><div class="label">Active Selling</div><div class="value">22</div><div class="sub">last 30d</div></div>
+      <div class="kpi"><div class="label">Units On Hand</div><div class="value">20,202</div><div class="sub">FBA fulfillable</div></div>
+      <div class="kpi"><div class="label">Units Inbound</div><div class="value">6,693</div><div class="sub">pipeline</div></div>
+      <div class="kpi"><div class="label">Open POs</div><div class="value">11</div><div class="sub">31,616 units</div></div>
+      <div class="kpi"><div class="label">30d Revenue</div><div class="value">$345,420</div><div class="sub">8,867 units</div></div>
+
+      <div class="kpi alert"><div class="label">Critical</div><div class="value">6</div><div class="sub">below LT cover</div></div>
+      <div class="kpi warn"><div class="label">Warning</div><div class="value">5</div><div class="sub">reorder window</div></div>
+      <div class="kpi alert"><div class="label">Overdue POs</div><div class="value">3</div><div class="sub">past expected</div></div>
+      <div class="kpi warn"><div class="label">Excess</div><div class="value">6</div><div class="sub">&gt;180d stock</div></div>
+      <div class="kpi alert"><div class="label">Stockout SKUs</div><div class="value">6</div><div class="sub">last 30d</div></div>
+      <div class="kpi warn"><div class="label">Listing Alerts</div><div class="value">12</div><div class="sub">last 7d</div></div>
+    </div>
+  </section>
+
+  <section class="alt">
+    <h2>Recommended Actions</h2>
+    <ul class="actions"><li><span class="action-pill pill-bad">URGENT</span><span>PO #3108 (ref 2297) — 20d overdue · 3,241 units</span></li><li><span class="action-pill pill-bad">URGENT</span><span>PO #3116 (ref 2305) — 13d overdue · 3,478 units</span></li><li><span class="action-pill pill-bad">URGENT</span><span>PO #3127 (ref 2315) — 6d overdue · 2,954 units</span></li><li><span class="action-pill pill-bad">URGENT</span><span>CBS-600107-COWEAR-5ct (Cow Ear, 5 ct) — only 1.6d cover · next ETA 2026-05-01</span></li><li><span class="action-pill pill-bad">URGENT</span><span>CBS-TURKEYTENDON-8oz (Turkey Tendons 8 oz) — only 12.0d cover · next ETA 2026-04-17</span></li><li><span class="action-pill pill-warn">HIGH</span><span>CBS-PIGEAR30 (Pig Ear, 30 ct) — pipeline DOS 68.5d, below 80d LT</span></li><li><span class="action-pill pill-warn">HIGH</span><span>MF-LJ5T-GXD0 (Chicken Feet, 30 ct) — pipeline DOS 72.4d, below 80d LT</span></li><li><span class="action-pill pill-warn">HIGH</span><span>CBS-DuckFeet90 (Duck Feet 90 ct) — pipeline DOS 73.3d, below 80d LT</span></li><li><span class="action-pill pill-warn">HIGH</span><span>CBS-PIGEAR-6ct (Pig Ear, 6 ct) — pipeline DOS 79.4d, below 80d LT</span></li><li><span class="action-pill pill-info">REVIEW</span><span>CBS 200-CT Chicken Feet (Chicken Feet 200 ct) — 1,723 units · DOS 242d</span></li><li><span class="action-pill pill-info">REVIEW</span><span>CBS-TURKEYTENDON-3oz (Turkey Tendons 3 oz) — 914 units · DOS 30,467d</span></li><li><span class="action-pill pill-info">REVIEW</span><span>CBS-DUCKNECK (Duck Necks, 12 pk) — 504 units · DOS 471d</span></li><li><span class="action-pill pill-info">REVIEW</span><span>CBS-TRACHEA-STRIPS (Trachea Strips, 6 in, 12 ct) — 295 units · DOS 4,214d</span></li><li><span class="action-pill pill-info">CLEANUP</span><span>1 stale draft PO(s): 1992</span></li></ul>
+  </section>
+
+  <section>
+    <h2 class="warn-title">Replenishment Timeline (90-day projection) <span class="count">22</span></h2>
+    <div class="note warn">
+      For every active replenishable SKU: projected run-out date <b>without inbound</b>, projected run-out <b>with all open POs</b>, and the next arrivals from open POs (overdue POs are pushed to today + 3 days for realism).
+      <br><b>0</b> SKUs project to stock out within 30 days · <b>0</b> within 60 days · <b>0</b> within 90 days even after all open POs land on time.
+    </div>
+    <div class="legend">
+      <span><span class="swatch" style="background:#557CF8"></span>PO arrival (on time)</span>
+      <span><span class="swatch" style="background:#F19E39"></span>PO arrival (overdue, pushed)</span>
+      <span><span class="swatch" style="background:#c8242a"></span>Projected stockout</span>
+      <span><span style="display:inline-block;width:14px;height:1.5px;background:#1A1A1A;vertical-align:middle;margin-right:4px"></span>Stock level (90d)</span>
+    </div>
+    <div class="scroll-x" style="margin-top:10px"><table>
+      <thead><tr>
+        <th>Status</th><th>SKU</th><th>Item</th>
+        <th>OH</th><th>v30/d</th><th>DOS</th>
+        <th>Run-out (no PO)</th><th>Run-out (with PO)</th>
+        <th>Next 3 Arrivals (eff. date · qty · +days)</th>
+        <th>90d Projection</th>
+      </tr></thead>
+      <tbody><tr>
+        <td><span class="pill pill-bad">critical</span></td>
+        <td class="mono">CBS-600107-COWEAR-5ct</td>
+        <td>Cow Ear, 5 ct</td>
+        <td class="num">1</td>
+        <td class="num">0.63</td>
+        <td class="num">2d</td>
+        <td class="num bad">2026-05-02</td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-01</span>
+          <span class="arr-qty">+36</span>
+          <span class="arr-add muted">+57d</span>
+          <span class="arr-po muted">PO #3134</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-06-06</span>
+          <span class="arr-qty">+28</span>
+          <span class="arr-add muted">+44d</span>
+          <span class="arr-po muted">PO #3172</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-06-19</span>
+          <span class="arr-qty">+48</span>
+          <span class="arr-add muted">+76d</span>
+          <span class="arr-po muted">PO #3195</span>
+        </div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="2.2" y1="2" x2="2.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="2.2" cy="4" r="2.5" fill="#557CF8"/><line x1="82.2" y1="2" x2="82.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="82.2" cy="4" r="2.5" fill="#557CF8"/><line x1="111.1" y1="2" x2="111.1" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="111.1" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,39.5 L 2.2,23.0 L 4.4,23.3 L 6.7,23.6 L 8.9,23.9 L 11.1,24.2 L 13.3,24.5 L 15.6,24.8 L 17.8,25.1 L 20.0,25.4 L 22.2,25.7 L 24.4,26.0 L 26.7,26.3 L 28.9,26.6 L 31.1,26.9 L 33.3,27.2 L 35.6,27.4 L 37.8,27.7 L 40.0,28.0 L 42.2,28.3 L 44.4,28.6 L 46.7,28.9 L 48.9,29.2 L 51.1,29.5 L 53.3,29.8 L 55.6,30.1 L 57.8,30.4 L 60.0,30.7 L 62.2,31.0 L 64.4,31.3 L 66.7,31.6 L 68.9,31.9 L 71.1,32.1 L 73.3,32.4 L 75.6,32.7 L 77.8,33.0 L 80.0,33.3 L 82.2,20.6 L 84.4,20.9 L 86.7,21.1 L 88.9,21.4 L 91.1,21.7 L 93.3,22.0 L 95.6,22.3 L 97.8,22.6 L 100.0,22.9 L 102.2,23.2 L 104.4,23.5 L 106.7,23.8 L 108.9,24.1 L 111.1,2.0 L 113.3,2.3 L 115.6,2.6 L 117.8,2.9 L 120.0,3.2 L 122.2,3.5 L 124.4,3.8 L 126.7,4.1 L 128.9,4.3 L 131.1,4.6 L 133.3,4.9 L 135.6,5.2 L 137.8,5.5 L 140.0,5.8 L 142.2,6.1 L 144.4,6.4 L 146.7,6.7 L 148.9,7.0 L 151.1,7.3 L 153.3,7.6 L 155.6,7.9 L 157.8,8.2 L 160.0,8.5 L 162.2,8.8 L 164.4,9.0 L 166.7,9.3 L 168.9,9.6 L 171.1,9.9 L 173.3,10.2 L 175.6,10.5 L 177.8,10.8 L 180.0,11.1 L 182.2,11.4 L 184.4,11.7 L 186.7,12.0 L 188.9,12.3 L 191.1,12.6 L 193.3,12.9 L 195.6,13.2 L 197.8,13.5 L 200.0,13.7" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-bad">critical</span></td>
+        <td class="mono">CBS-TURKEYTENDON-8oz</td>
+        <td>Turkey Tendons 8 oz</td>
+        <td class="num">77</td>
+        <td class="num">7.10</td>
+        <td class="num">11d</td>
+        <td class="num bad">2026-05-11</td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-01</span>
+          <span class="arr-qty">+241</span>
+          <span class="arr-add muted">+34d</span>
+          <span class="arr-po muted">PO #3134</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+40</span>
+          <span class="arr-add muted">+6d</span>
+          <span class="arr-po muted">PO #3116</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+378</span>
+          <span class="arr-add muted">+53d</span>
+          <span class="arr-po muted">PO #3127</span>
+        </div><div class="muted" style="font-size:10px">+3 more</div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="2.2" y1="2" x2="2.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="2.2" cy="4" r="2.5" fill="#557CF8"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="17.8" y1="2" x2="17.8" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="17.8" cy="4" r="2.5" fill="#557CF8"/><line x1="48.9" y1="2" x2="48.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="48.9" cy="4" r="2.5" fill="#557CF8"/><line x1="82.2" y1="2" x2="82.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="82.2" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,37.7 L 2.2,30.7 L 4.4,30.9 L 6.7,18.6 L 8.9,18.8 L 11.1,19.0 L 13.3,19.2 L 15.6,19.4 L 17.8,7.7 L 20.0,7.9 L 22.2,8.1 L 24.4,8.4 L 26.7,8.6 L 28.9,8.8 L 31.1,9.0 L 33.3,9.2 L 35.6,9.4 L 37.8,9.6 L 40.0,9.8 L 42.2,10.1 L 44.4,10.3 L 46.7,10.5 L 48.9,2.0 L 51.1,2.2 L 53.3,2.4 L 55.6,2.6 L 57.8,2.9 L 60.0,3.1 L 62.2,3.3 L 64.4,3.5 L 66.7,3.7 L 68.9,3.9 L 71.1,4.1 L 73.3,4.3 L 75.6,4.6 L 77.8,4.8 L 80.0,5.0 L 82.2,2.4 L 84.4,2.6 L 86.7,2.9 L 88.9,3.1 L 91.1,3.3 L 93.3,3.5 L 95.6,3.7 L 97.8,3.9 L 100.0,4.1 L 102.2,4.3 L 104.4,4.6 L 106.7,4.8 L 108.9,5.0 L 111.1,5.2 L 113.3,5.4 L 115.6,5.6 L 117.8,5.8 L 120.0,6.1 L 122.2,6.3 L 124.4,6.5 L 126.7,6.7 L 128.9,6.9 L 131.1,7.1 L 133.3,7.3 L 135.6,7.5 L 137.8,7.8 L 140.0,8.0 L 142.2,8.2 L 144.4,8.4 L 146.7,8.6 L 148.9,8.8 L 151.1,9.0 L 153.3,9.2 L 155.6,9.5 L 157.8,9.7 L 160.0,9.9 L 162.2,10.1 L 164.4,10.3 L 166.7,10.5 L 168.9,10.7 L 171.1,10.9 L 173.3,11.2 L 175.6,11.4 L 177.8,11.6 L 180.0,11.8 L 182.2,12.0 L 184.4,12.2 L 186.7,12.4 L 188.9,12.6 L 191.1,12.9 L 193.3,13.1 L 195.6,13.3 L 197.8,13.5 L 200.0,13.7" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-bad">critical</span></td>
+        <td class="mono">CBS-DuckFeet90</td>
+        <td>Duck Feet 90 ct</td>
+        <td class="num">462</td>
+        <td class="num">13.47</td>
+        <td class="num">34d</td>
+        <td class="num bad">2026-06-04</td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-01</span>
+          <span class="arr-qty">+149</span>
+          <span class="arr-add muted">+11d</span>
+          <span class="arr-po muted">PO #3134</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+150</span>
+          <span class="arr-add muted">+11d</span>
+          <span class="arr-po muted">PO #3108</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+219</span>
+          <span class="arr-add muted">+16d</span>
+          <span class="arr-po muted">PO #3116</span>
+        </div><div class="muted" style="font-size:10px">+4 more</div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="2.2" y1="2" x2="2.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="2.2" cy="4" r="2.5" fill="#557CF8"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="17.8" y1="2" x2="17.8" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="17.8" cy="4" r="2.5" fill="#557CF8"/><line x1="48.9" y1="2" x2="48.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="48.9" cy="4" r="2.5" fill="#557CF8"/><line x1="82.2" y1="2" x2="82.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="82.2" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,35.3 L 2.2,33.9 L 4.4,34.0 L 6.7,29.2 L 8.9,29.4 L 11.1,29.5 L 13.3,29.7 L 15.6,29.8 L 17.8,26.2 L 20.0,26.4 L 22.2,26.5 L 24.4,26.6 L 26.7,26.8 L 28.9,26.9 L 31.1,27.0 L 33.3,27.2 L 35.6,27.3 L 37.8,27.5 L 40.0,27.6 L 42.2,27.7 L 44.4,27.9 L 46.7,28.0 L 48.9,25.2 L 51.1,25.4 L 53.3,25.5 L 55.6,25.6 L 57.8,25.8 L 60.0,25.9 L 62.2,26.1 L 64.4,26.2 L 66.7,26.3 L 68.9,26.5 L 71.1,26.6 L 73.3,26.7 L 75.6,26.9 L 77.8,27.0 L 80.0,27.2 L 82.2,2.0 L 84.4,2.1 L 86.7,2.3 L 88.9,2.4 L 91.1,2.6 L 93.3,2.7 L 95.6,2.8 L 97.8,3.0 L 100.0,3.1 L 102.2,3.2 L 104.4,3.4 L 106.7,3.5 L 108.9,3.7 L 111.1,3.8 L 113.3,3.9 L 115.6,4.1 L 117.8,4.2 L 120.0,4.4 L 122.2,4.5 L 124.4,4.6 L 126.7,4.8 L 128.9,4.9 L 131.1,5.0 L 133.3,5.2 L 135.6,5.3 L 137.8,5.5 L 140.0,5.6 L 142.2,5.7 L 144.4,5.9 L 146.7,6.0 L 148.9,6.2 L 151.1,6.3 L 153.3,6.4 L 155.6,6.6 L 157.8,6.7 L 160.0,6.8 L 162.2,7.0 L 164.4,7.1 L 166.7,7.3 L 168.9,7.4 L 171.1,7.5 L 173.3,7.7 L 175.6,7.8 L 177.8,8.0 L 180.0,8.1 L 182.2,8.2 L 184.4,8.4 L 186.7,8.5 L 188.9,8.6 L 191.1,8.8 L 193.3,8.9 L 195.6,9.1 L 197.8,9.2 L 200.0,9.3" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-warn">warning</span></td>
+        <td class="mono">CBS-BULLYBITES</td>
+        <td>Bully Bites, 2-4 in, 1 lb</td>
+        <td class="num">71</td>
+        <td class="num">1.60</td>
+        <td class="num">44d</td>
+        <td class="num bad">2026-06-14</td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+43</span>
+          <span class="arr-add muted">+27d</span>
+          <span class="arr-po muted">PO #3108</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-06-06</span>
+          <span class="arr-qty">+46</span>
+          <span class="arr-add muted">+29d</span>
+          <span class="arr-po muted">PO #3172</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-06-12</span>
+          <span class="arr-qty">+12</span>
+          <span class="arr-add muted">+8d</span>
+          <span class="arr-po muted">PO #3185</span>
+        </div><div class="muted" style="font-size:10px">+2 more</div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="82.2" y1="2" x2="82.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="82.2" cy="4" r="2.5" fill="#557CF8"/><line x1="95.6" y1="2" x2="95.6" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="95.6" cy="4" r="2.5" fill="#557CF8"/><line x1="111.1" y1="2" x2="111.1" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="111.1" cy="4" r="2.5" fill="#557CF8"/><line x1="128.9" y1="2" x2="128.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="128.9" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,21.9 L 2.2,22.3 L 4.4,22.7 L 6.7,12.2 L 8.9,12.6 L 11.1,13.0 L 13.3,13.4 L 15.6,13.8 L 17.8,14.2 L 20.0,14.6 L 22.2,15.0 L 24.4,15.4 L 26.7,15.9 L 28.9,16.3 L 31.1,16.7 L 33.3,17.1 L 35.6,17.5 L 37.8,17.9 L 40.0,18.3 L 42.2,18.7 L 44.4,19.1 L 46.7,19.5 L 48.9,19.9 L 51.1,20.3 L 53.3,20.7 L 55.6,21.2 L 57.8,21.6 L 60.0,22.0 L 62.2,22.4 L 64.4,22.8 L 66.7,23.2 L 68.9,23.6 L 71.1,24.0 L 73.3,24.4 L 75.6,24.8 L 77.8,25.2 L 80.0,25.6 L 82.2,14.3 L 84.4,14.7 L 86.7,15.1 L 88.9,15.5 L 91.1,16.0 L 93.3,16.4 L 95.6,13.7 L 97.8,14.1 L 100.0,14.5 L 102.2,14.9 L 104.4,15.3 L 106.7,15.8 L 108.9,16.2 L 111.1,4.9 L 113.3,5.3 L 115.6,5.7 L 117.8,6.1 L 120.0,6.5 L 122.2,6.9 L 124.4,7.3 L 126.7,7.7 L 128.9,2.0 L 131.1,2.4 L 133.3,2.8 L 135.6,3.2 L 137.8,3.6 L 140.0,4.0 L 142.2,4.4 L 144.4,4.9 L 146.7,5.3 L 148.9,5.7 L 151.1,6.1 L 153.3,6.5 L 155.6,6.9 L 157.8,7.3 L 160.0,7.7 L 162.2,8.1 L 164.4,8.5 L 166.7,8.9 L 168.9,9.3 L 171.1,9.7 L 173.3,10.2 L 175.6,10.6 L 177.8,11.0 L 180.0,11.4 L 182.2,11.8 L 184.4,12.2 L 186.7,12.6 L 188.9,13.0 L 191.1,13.4 L 193.3,13.8 L 195.6,14.2 L 197.8,14.6 L 200.0,15.0" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-bad">critical</span></td>
+        <td class="mono">MF-LJ5T-GXD0</td>
+        <td>Chicken Feet, 30 ct</td>
+        <td class="num">3,505</td>
+        <td class="num">73.17</td>
+        <td class="num">48d</td>
+        <td class="num bad">2026-06-17</td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+984</span>
+          <span class="arr-add muted">+13d</span>
+          <span class="arr-po muted">PO #3108</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+780</span>
+          <span class="arr-add muted">+11d</span>
+          <span class="arr-po muted">PO #3116</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+1,038</span>
+          <span class="arr-add muted">+14d</span>
+          <span class="arr-po muted">PO #3127</span>
+        </div><div class="muted" style="font-size:10px">+3 more</div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="82.2" y1="2" x2="82.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="82.2" cy="4" r="2.5" fill="#557CF8"/><line x1="95.6" y1="2" x2="95.6" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="95.6" cy="4" r="2.5" fill="#557CF8"/><line x1="128.9" y1="2" x2="128.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="128.9" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,20.0 L 2.2,20.4 L 4.4,20.8 L 6.7,5.2 L 8.9,5.6 L 11.1,6.0 L 13.3,6.5 L 15.6,6.9 L 17.8,7.3 L 20.0,7.7 L 22.2,8.1 L 24.4,8.5 L 26.7,9.0 L 28.9,9.4 L 31.1,9.8 L 33.3,10.2 L 35.6,10.6 L 37.8,11.1 L 40.0,11.5 L 42.2,11.9 L 44.4,12.3 L 46.7,12.7 L 48.9,13.1 L 51.1,13.6 L 53.3,14.0 L 55.6,14.4 L 57.8,14.8 L 60.0,15.2 L 62.2,15.7 L 64.4,16.1 L 66.7,16.5 L 68.9,16.9 L 71.1,17.3 L 73.3,17.7 L 75.6,18.2 L 77.8,18.6 L 80.0,19.0 L 82.2,5.3 L 84.4,5.7 L 86.7,6.2 L 88.9,6.6 L 91.1,7.0 L 93.3,7.4 L 95.6,3.3 L 97.8,3.7 L 100.0,4.1 L 102.2,4.5 L 104.4,4.9 L 106.7,5.4 L 108.9,5.8 L 111.1,6.2 L 113.3,6.6 L 115.6,7.0 L 117.8,7.5 L 120.0,7.9 L 122.2,8.3 L 124.4,8.7 L 126.7,9.1 L 128.9,2.0 L 131.1,2.4 L 133.3,2.8 L 135.6,3.3 L 137.8,3.7 L 140.0,4.1 L 142.2,4.5 L 144.4,4.9 L 146.7,5.3 L 148.9,5.8 L 151.1,6.2 L 153.3,6.6 L 155.6,7.0 L 157.8,7.4 L 160.0,7.9 L 162.2,8.3 L 164.4,8.7 L 166.7,9.1 L 168.9,9.5 L 171.1,9.9 L 173.3,10.4 L 175.6,10.8 L 177.8,11.2 L 180.0,11.6 L 182.2,12.0 L 184.4,12.5 L 186.7,12.9 L 188.9,13.3 L 191.1,13.7 L 193.3,14.1 L 195.6,14.5 L 197.8,15.0 L 200.0,15.4" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-bad">critical</span></td>
+        <td class="mono">CBS-PIGEAR30</td>
+        <td>Pig Ear, 30 ct</td>
+        <td class="num">4,580</td>
+        <td class="num">67.67</td>
+        <td class="num">68d</td>
+        <td class="num bad">2026-07-07</td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-22</span>
+          <span class="arr-qty">+1,117</span>
+          <span class="arr-add muted">+17d</span>
+          <span class="arr-po muted">PO #3155</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-29</span>
+          <span class="arr-qty">+348</span>
+          <span class="arr-add muted">+5d</span>
+          <span class="arr-po muted">PO #3162</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-06-06</span>
+          <span class="arr-qty">+3,738</span>
+          <span class="arr-add muted">+55d</span>
+          <span class="arr-po muted">PO #3172</span>
+        </div><div class="muted" style="font-size:10px">+3 more</div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="48.9" y1="2" x2="48.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="48.9" cy="4" r="2.5" fill="#557CF8"/><line x1="64.4" y1="2" x2="64.4" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="64.4" cy="4" r="2.5" fill="#557CF8"/><line x1="82.2" y1="2" x2="82.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="82.2" cy="4" r="2.5" fill="#557CF8"/><line x1="95.6" y1="2" x2="95.6" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="95.6" cy="4" r="2.5" fill="#557CF8"/><line x1="111.1" y1="2" x2="111.1" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="111.1" cy="4" r="2.5" fill="#557CF8"/><line x1="128.9" y1="2" x2="128.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="128.9" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,16.9 L 2.2,17.3 L 4.4,17.6 L 6.7,17.9 L 8.9,18.3 L 11.1,18.6 L 13.3,19.0 L 15.6,19.3 L 17.8,19.6 L 20.0,20.0 L 22.2,20.3 L 24.4,20.7 L 26.7,21.0 L 28.9,21.4 L 31.1,21.7 L 33.3,22.0 L 35.6,22.4 L 37.8,22.7 L 40.0,23.1 L 42.2,23.4 L 44.4,23.7 L 46.7,24.1 L 48.9,18.8 L 51.1,19.1 L 53.3,19.5 L 55.6,19.8 L 57.8,20.2 L 60.0,20.5 L 62.2,20.8 L 64.4,19.4 L 66.7,19.8 L 68.9,20.1 L 71.1,20.4 L 73.3,20.8 L 75.6,21.1 L 77.8,21.5 L 80.0,21.8 L 82.2,3.3 L 84.4,3.7 L 86.7,4.0 L 88.9,4.3 L 91.1,4.7 L 93.3,5.0 L 95.6,4.0 L 97.8,4.3 L 100.0,4.6 L 102.2,5.0 L 104.4,5.3 L 106.7,5.7 L 108.9,6.0 L 111.1,2.0 L 113.3,2.3 L 115.6,2.7 L 117.8,3.0 L 120.0,3.4 L 122.2,3.7 L 124.4,4.0 L 126.7,4.4 L 128.9,3.9 L 131.1,4.2 L 133.3,4.6 L 135.6,4.9 L 137.8,5.3 L 140.0,5.6 L 142.2,5.9 L 144.4,6.3 L 146.7,6.6 L 148.9,7.0 L 151.1,7.3 L 153.3,7.7 L 155.6,8.0 L 157.8,8.3 L 160.0,8.7 L 162.2,9.0 L 164.4,9.4 L 166.7,9.7 L 168.9,10.0 L 171.1,10.4 L 173.3,10.7 L 175.6,11.1 L 177.8,11.4 L 180.0,11.7 L 182.2,12.1 L 184.4,12.4 L 186.7,12.8 L 188.9,13.1 L 191.1,13.5 L 193.3,13.8 L 195.6,14.1 L 197.8,14.5 L 200.0,14.8" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-good">healthy</span></td>
+        <td class="mono">EM-H2D4-RLNT</td>
+        <td>Bully Spirals, 6 pk</td>
+        <td class="num">169</td>
+        <td class="num">2.17</td>
+        <td class="num">78d</td>
+        <td class="num bad">2026-07-17</td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+84</span>
+          <span class="arr-add muted">+39d</span>
+          <span class="arr-po muted">PO #3108</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+84</span>
+          <span class="arr-add muted">+39d</span>
+          <span class="arr-po muted">PO #3116</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-06-19</span>
+          <span class="arr-qty">+90</span>
+          <span class="arr-add muted">+41d</span>
+          <span class="arr-po muted">PO #3195</span>
+        </div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="111.1" y1="2" x2="111.1" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="111.1" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,20.6 L 2.2,20.8 L 4.4,21.1 L 6.7,2.0 L 8.9,2.2 L 11.1,2.5 L 13.3,2.7 L 15.6,3.0 L 17.8,3.2 L 20.0,3.5 L 22.2,3.7 L 24.4,4.0 L 26.7,4.2 L 28.9,4.5 L 31.1,4.7 L 33.3,5.0 L 35.6,5.2 L 37.8,5.5 L 40.0,5.7 L 42.2,6.0 L 44.4,6.2 L 46.7,6.5 L 48.9,6.7 L 51.1,7.0 L 53.3,7.2 L 55.6,7.5 L 57.8,7.7 L 60.0,8.0 L 62.2,8.2 L 64.4,8.5 L 66.7,8.7 L 68.9,9.0 L 71.1,9.2 L 73.3,9.5 L 75.6,9.7 L 77.8,10.0 L 80.0,10.2 L 82.2,10.5 L 84.4,10.7 L 86.7,11.0 L 88.9,11.2 L 91.1,11.5 L 93.3,11.7 L 95.6,12.0 L 97.8,12.2 L 100.0,12.5 L 102.2,12.7 L 104.4,13.0 L 106.7,13.2 L 108.9,13.5 L 111.1,3.4 L 113.3,3.6 L 115.6,3.9 L 117.8,4.1 L 120.0,4.4 L 122.2,4.6 L 124.4,4.9 L 126.7,5.1 L 128.9,5.4 L 131.1,5.6 L 133.3,5.9 L 135.6,6.1 L 137.8,6.4 L 140.0,6.6 L 142.2,6.9 L 144.4,7.1 L 146.7,7.4 L 148.9,7.6 L 151.1,7.9 L 153.3,8.1 L 155.6,8.4 L 157.8,8.6 L 160.0,8.9 L 162.2,9.1 L 164.4,9.4 L 166.7,9.6 L 168.9,9.9 L 171.1,10.1 L 173.3,10.4 L 175.6,10.6 L 177.8,10.9 L 180.0,11.1 L 182.2,11.4 L 184.4,11.6 L 186.7,11.9 L 188.9,12.1 L 191.1,12.4 L 193.3,12.6 L 195.6,12.9 L 197.8,13.1 L 200.0,13.4" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-bad">critical</span></td>
+        <td class="mono">CBS-PIGEAR-6ct</td>
+        <td>Pig Ear, 6 ct</td>
+        <td class="num">199</td>
+        <td class="num">2.53</td>
+        <td class="num">79d</td>
+        <td class="num bad">2026-07-18</td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-06-19</span>
+          <span class="arr-qty">+100</span>
+          <span class="arr-add muted">+40d</span>
+          <span class="arr-po muted">PO #3195</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-06-27</span>
+          <span class="arr-qty">+116</span>
+          <span class="arr-add muted">+46d</span>
+          <span class="arr-po muted">PO #3205</span>
+        </div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="111.1" y1="2" x2="111.1" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="111.1" cy="4" r="2.5" fill="#557CF8"/><line x1="128.9" y1="2" x2="128.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="128.9" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,11.8 L 2.2,12.2 L 4.4,12.5 L 6.7,12.9 L 8.9,13.2 L 11.1,13.6 L 13.3,14.0 L 15.6,14.3 L 17.8,14.7 L 20.0,15.0 L 22.2,15.4 L 24.4,15.8 L 26.7,16.1 L 28.9,16.5 L 31.1,16.8 L 33.3,17.2 L 35.6,17.5 L 37.8,17.9 L 40.0,18.3 L 42.2,18.6 L 44.4,19.0 L 46.7,19.3 L 48.9,19.7 L 51.1,20.1 L 53.3,20.4 L 55.6,20.8 L 57.8,21.1 L 60.0,21.5 L 62.2,21.8 L 64.4,22.2 L 66.7,22.6 L 68.9,22.9 L 71.1,23.3 L 73.3,23.6 L 75.6,24.0 L 77.8,24.4 L 80.0,24.7 L 82.2,25.1 L 84.4,25.4 L 86.7,25.8 L 88.9,26.1 L 91.1,26.5 L 93.3,26.9 L 95.6,27.2 L 97.8,27.6 L 100.0,27.9 L 102.2,28.3 L 104.4,28.7 L 106.7,29.0 L 108.9,29.4 L 111.1,15.6 L 113.3,15.9 L 115.6,16.3 L 117.8,16.6 L 120.0,17.0 L 122.2,17.4 L 124.4,17.7 L 126.7,18.1 L 128.9,2.0 L 131.1,2.4 L 133.3,2.7 L 135.6,3.1 L 137.8,3.4 L 140.0,3.8 L 142.2,4.2 L 144.4,4.5 L 146.7,4.9 L 148.9,5.2 L 151.1,5.6 L 153.3,5.9 L 155.6,6.3 L 157.8,6.7 L 160.0,7.0 L 162.2,7.4 L 164.4,7.7 L 166.7,8.1 L 168.9,8.5 L 171.1,8.8 L 173.3,9.2 L 175.6,9.5 L 177.8,9.9 L 180.0,10.2 L 182.2,10.6 L 184.4,11.0 L 186.7,11.3 L 188.9,11.7 L 191.1,12.0 L 193.3,12.4 L 195.6,12.8 L 197.8,13.1 L 200.0,13.5" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-warn">warning</span></td>
+        <td class="mono">CBS-CHIPS5LB</td>
+        <td>Rawhide Chips, 3 lb</td>
+        <td class="num">64</td>
+        <td class="num">0.80</td>
+        <td class="num">80d</td>
+        <td class="num bad">2026-07-20</td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-06-06</span>
+          <span class="arr-qty">+38</span>
+          <span class="arr-add muted">+48d</span>
+          <span class="arr-po muted">PO #3172</span>
+        </div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="82.2" y1="2" x2="82.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="82.2" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,6.4 L 2.2,6.8 L 4.4,7.2 L 6.7,7.7 L 8.9,8.1 L 11.1,8.5 L 13.3,8.9 L 15.6,9.3 L 17.8,9.8 L 20.0,10.2 L 22.2,10.6 L 24.4,11.0 L 26.7,11.4 L 28.9,11.9 L 31.1,12.3 L 33.3,12.7 L 35.6,13.1 L 37.8,13.5 L 40.0,14.0 L 42.2,14.4 L 44.4,14.8 L 46.7,15.2 L 48.9,15.6 L 51.1,16.1 L 53.3,16.5 L 55.6,16.9 L 57.8,17.3 L 60.0,17.7 L 62.2,18.2 L 64.4,18.6 L 66.7,19.0 L 68.9,19.4 L 71.1,19.8 L 73.3,20.3 L 75.6,20.7 L 77.8,21.1 L 80.0,21.5 L 82.2,2.0 L 84.4,2.4 L 86.7,2.8 L 88.9,3.3 L 91.1,3.7 L 93.3,4.1 L 95.6,4.5 L 97.8,4.9 L 100.0,5.4 L 102.2,5.8 L 104.4,6.2 L 106.7,6.6 L 108.9,7.0 L 111.1,7.5 L 113.3,7.9 L 115.6,8.3 L 117.8,8.7 L 120.0,9.1 L 122.2,9.6 L 124.4,10.0 L 126.7,10.4 L 128.9,10.8 L 131.1,11.2 L 133.3,11.7 L 135.6,12.1 L 137.8,12.5 L 140.0,12.9 L 142.2,13.3 L 144.4,13.8 L 146.7,14.2 L 148.9,14.6 L 151.1,15.0 L 153.3,15.4 L 155.6,15.9 L 157.8,16.3 L 160.0,16.7 L 162.2,17.1 L 164.4,17.5 L 166.7,18.0 L 168.9,18.4 L 171.1,18.8 L 173.3,19.2 L 175.6,19.6 L 177.8,20.1 L 180.0,20.5 L 182.2,20.9 L 184.4,21.3 L 186.7,21.7 L 188.9,22.2 L 191.1,22.6 L 193.3,23.0 L 195.6,23.4 L 197.8,23.8 L 200.0,24.3" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-warn">warning</span></td>
+        <td class="mono">CBS-PIG18</td>
+        <td>Pig Ear, 18 ct</td>
+        <td class="num">277</td>
+        <td class="num">3.27</td>
+        <td class="num">85d</td>
+        <td class="num bad">2026-07-24</td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-01</span>
+          <span class="arr-qty">+32</span>
+          <span class="arr-add muted">+10d</span>
+          <span class="arr-po muted">PO #3134</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+78</span>
+          <span class="arr-add muted">+24d</span>
+          <span class="arr-po muted">PO #3116</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+108</span>
+          <span class="arr-add muted">+33d</span>
+          <span class="arr-po muted">PO #3127</span>
+        </div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="2.2" y1="2" x2="2.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="2.2" cy="4" r="2.5" fill="#557CF8"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/>
+        <path d="M 0.0,18.3 L 2.2,16.1 L 4.4,16.3 L 6.7,2.0 L 8.9,2.3 L 11.1,2.5 L 13.3,2.8 L 15.6,3.0 L 17.8,3.3 L 20.0,3.5 L 22.2,3.8 L 24.4,4.0 L 26.7,4.3 L 28.9,4.6 L 31.1,4.8 L 33.3,5.1 L 35.6,5.3 L 37.8,5.6 L 40.0,5.8 L 42.2,6.1 L 44.4,6.4 L 46.7,6.6 L 48.9,6.9 L 51.1,7.1 L 53.3,7.4 L 55.6,7.6 L 57.8,7.9 L 60.0,8.1 L 62.2,8.4 L 64.4,8.7 L 66.7,8.9 L 68.9,9.2 L 71.1,9.4 L 73.3,9.7 L 75.6,9.9 L 77.8,10.2 L 80.0,10.5 L 82.2,10.7 L 84.4,11.0 L 86.7,11.2 L 88.9,11.5 L 91.1,11.7 L 93.3,12.0 L 95.6,12.2 L 97.8,12.5 L 100.0,12.8 L 102.2,13.0 L 104.4,13.3 L 106.7,13.5 L 108.9,13.8 L 111.1,14.0 L 113.3,14.3 L 115.6,14.5 L 117.8,14.8 L 120.0,15.1 L 122.2,15.3 L 124.4,15.6 L 126.7,15.8 L 128.9,16.1 L 131.1,16.3 L 133.3,16.6 L 135.6,16.9 L 137.8,17.1 L 140.0,17.4 L 142.2,17.6 L 144.4,17.9 L 146.7,18.1 L 148.9,18.4 L 151.1,18.6 L 153.3,18.9 L 155.6,19.2 L 157.8,19.4 L 160.0,19.7 L 162.2,19.9 L 164.4,20.2 L 166.7,20.4 L 168.9,20.7 L 171.1,21.0 L 173.3,21.2 L 175.6,21.5 L 177.8,21.7 L 180.0,22.0 L 182.2,22.2 L 184.4,22.5 L 186.7,22.7 L 188.9,23.0 L 191.1,23.3 L 193.3,23.5 L 195.6,23.8 L 197.8,24.0 L 200.0,24.3" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-good">healthy</span></td>
+        <td class="mono">YL-3U59-R0FN</td>
+        <td>Pig Ear Strips, 1 lb</td>
+        <td class="num">329</td>
+        <td class="num">3.83</td>
+        <td class="num">86d</td>
+        <td class="num bad">2026-07-25</td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-29</span>
+          <span class="arr-qty">+57</span>
+          <span class="arr-add muted">+15d</span>
+          <span class="arr-po muted">PO #3162</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-06-12</span>
+          <span class="arr-qty">+34</span>
+          <span class="arr-add muted">+9d</span>
+          <span class="arr-po muted">PO #3185</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-06-19</span>
+          <span class="arr-qty">+59</span>
+          <span class="arr-add muted">+15d</span>
+          <span class="arr-po muted">PO #3195</span>
+        </div><div class="muted" style="font-size:10px">+1 more</div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="64.4" y1="2" x2="64.4" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="64.4" cy="4" r="2.5" fill="#557CF8"/><line x1="95.6" y1="2" x2="95.6" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="95.6" cy="4" r="2.5" fill="#557CF8"/><line x1="111.1" y1="2" x2="111.1" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="111.1" cy="4" r="2.5" fill="#557CF8"/><line x1="128.9" y1="2" x2="128.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="128.9" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,2.0 L 2.2,2.4 L 4.4,2.9 L 6.7,3.3 L 8.9,3.8 L 11.1,4.2 L 13.3,4.7 L 15.6,5.1 L 17.8,5.5 L 20.0,6.0 L 22.2,6.4 L 24.4,6.9 L 26.7,7.3 L 28.9,7.8 L 31.1,8.2 L 33.3,8.6 L 35.6,9.1 L 37.8,9.5 L 40.0,10.0 L 42.2,10.4 L 44.4,10.8 L 46.7,11.3 L 48.9,11.7 L 51.1,12.2 L 53.3,12.6 L 55.6,13.1 L 57.8,13.5 L 60.0,13.9 L 62.2,14.4 L 64.4,8.2 L 66.7,8.7 L 68.9,9.1 L 71.1,9.6 L 73.3,10.0 L 75.6,10.5 L 77.8,10.9 L 80.0,11.3 L 82.2,11.8 L 84.4,12.2 L 86.7,12.7 L 88.9,13.1 L 91.1,13.6 L 93.3,14.0 L 95.6,10.5 L 97.8,11.0 L 100.0,11.4 L 102.2,11.8 L 104.4,12.3 L 106.7,12.7 L 108.9,13.2 L 111.1,6.8 L 113.3,7.2 L 115.6,7.7 L 117.8,8.1 L 120.0,8.6 L 122.2,9.0 L 124.4,9.4 L 126.7,9.9 L 128.9,4.4 L 131.1,4.9 L 133.3,5.3 L 135.6,5.8 L 137.8,6.2 L 140.0,6.7 L 142.2,7.1 L 144.4,7.5 L 146.7,8.0 L 148.9,8.4 L 151.1,8.9 L 153.3,9.3 L 155.6,9.8 L 157.8,10.2 L 160.0,10.6 L 162.2,11.1 L 164.4,11.5 L 166.7,12.0 L 168.9,12.4 L 171.1,12.8 L 173.3,13.3 L 175.6,13.7 L 177.8,14.2 L 180.0,14.6 L 182.2,15.1 L 184.4,15.5 L 186.7,15.9 L 188.9,16.4 L 191.1,16.8 L 193.3,17.3 L 195.6,17.7 L 197.8,18.2 L 200.0,18.6" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-warn">warning</span></td>
+        <td class="mono">CBS-CHICKENFT60</td>
+        <td>Chicken Feet, 60 ct</td>
+        <td class="num">3,756</td>
+        <td class="num">41.10</td>
+        <td class="num">91d</td>
+        <td class="num bad"><span class="good">90d+</span></td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-01</span>
+          <span class="arr-qty">+77</span>
+          <span class="arr-add muted">+2d</span>
+          <span class="arr-po muted">PO #3134</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+758</span>
+          <span class="arr-add muted">+18d</span>
+          <span class="arr-po muted">PO #3108</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+772</span>
+          <span class="arr-add muted">+19d</span>
+          <span class="arr-po muted">PO #3116</span>
+        </div><div class="muted" style="font-size:10px">+8 more</div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="2.2" y1="2" x2="2.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="2.2" cy="4" r="2.5" fill="#557CF8"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="17.8" y1="2" x2="17.8" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="17.8" cy="4" r="2.5" fill="#557CF8"/><line x1="48.9" y1="2" x2="48.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="48.9" cy="4" r="2.5" fill="#557CF8"/><line x1="64.4" y1="2" x2="64.4" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="64.4" cy="4" r="2.5" fill="#557CF8"/><line x1="82.2" y1="2" x2="82.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="82.2" cy="4" r="2.5" fill="#557CF8"/><line x1="95.6" y1="2" x2="95.6" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="95.6" cy="4" r="2.5" fill="#557CF8"/><line x1="111.1" y1="2" x2="111.1" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="111.1" cy="4" r="2.5" fill="#557CF8"/><line x1="128.9" y1="2" x2="128.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="128.9" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,19.2 L 2.2,19.0 L 4.4,19.2 L 6.7,9.6 L 8.9,9.9 L 11.1,10.1 L 13.3,10.3 L 15.6,10.6 L 17.8,8.8 L 20.0,9.0 L 22.2,9.2 L 24.4,9.5 L 26.7,9.7 L 28.9,9.9 L 31.1,10.1 L 33.3,10.4 L 35.6,10.6 L 37.8,10.8 L 40.0,11.1 L 42.2,11.3 L 44.4,11.5 L 46.7,11.7 L 48.9,5.5 L 51.1,5.8 L 53.3,6.0 L 55.6,6.2 L 57.8,6.5 L 60.0,6.7 L 62.2,6.9 L 64.4,5.2 L 66.7,5.4 L 68.9,5.7 L 71.1,5.9 L 73.3,6.1 L 75.6,6.3 L 77.8,6.6 L 80.0,6.8 L 82.2,5.4 L 84.4,5.6 L 86.7,5.8 L 88.9,6.0 L 91.1,6.3 L 93.3,6.5 L 95.6,5.2 L 97.8,5.4 L 100.0,5.6 L 102.2,5.9 L 104.4,6.1 L 106.7,6.3 L 108.9,6.6 L 111.1,2.0 L 113.3,2.2 L 115.6,2.5 L 117.8,2.7 L 120.0,2.9 L 122.2,3.1 L 124.4,3.4 L 126.7,3.6 L 128.9,2.9 L 131.1,3.1 L 133.3,3.4 L 135.6,3.6 L 137.8,3.8 L 140.0,4.1 L 142.2,4.3 L 144.4,4.5 L 146.7,4.7 L 148.9,5.0 L 151.1,5.2 L 153.3,5.4 L 155.6,5.6 L 157.8,5.9 L 160.0,6.1 L 162.2,6.3 L 164.4,6.6 L 166.7,6.8 L 168.9,7.0 L 171.1,7.2 L 173.3,7.5 L 175.6,7.7 L 177.8,7.9 L 180.0,8.2 L 182.2,8.4 L 184.4,8.6 L 186.7,8.8 L 188.9,9.1 L 191.1,9.3 L 193.3,9.5 L 195.6,9.8 L 197.8,10.0 L 200.0,10.2" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-warn">warning</span></td>
+        <td class="mono">CBS-DuckFeet30</td>
+        <td>Duck Feet, 30 ct</td>
+        <td class="num">2,579</td>
+        <td class="num">27.03</td>
+        <td class="num">95d</td>
+        <td class="num bad"><span class="good">90d+</span></td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-01</span>
+          <span class="arr-qty">+90</span>
+          <span class="arr-add muted">+3d</span>
+          <span class="arr-po muted">PO #3134</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+612</span>
+          <span class="arr-add muted">+23d</span>
+          <span class="arr-po muted">PO #3108</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+1,104</span>
+          <span class="arr-add muted">+41d</span>
+          <span class="arr-po muted">PO #3116</span>
+        </div><div class="muted" style="font-size:10px">+3 more</div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="2.2" y1="2" x2="2.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="2.2" cy="4" r="2.5" fill="#557CF8"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="17.8" y1="2" x2="17.8" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="17.8" cy="4" r="2.5" fill="#557CF8"/><line x1="48.9" y1="2" x2="48.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="48.9" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,24.0 L 2.2,23.7 L 4.4,23.8 L 6.7,7.9 L 8.9,8.1 L 11.1,8.3 L 13.3,8.4 L 15.6,8.6 L 17.8,6.8 L 20.0,7.0 L 22.2,7.2 L 24.4,7.3 L 26.7,7.5 L 28.9,7.7 L 31.1,7.8 L 33.3,8.0 L 35.6,8.2 L 37.8,8.3 L 40.0,8.5 L 42.2,8.7 L 44.4,8.8 L 46.7,9.0 L 48.9,2.0 L 51.1,2.2 L 53.3,2.3 L 55.6,2.5 L 57.8,2.7 L 60.0,2.8 L 62.2,3.0 L 64.4,3.2 L 66.7,3.3 L 68.9,3.5 L 71.1,3.7 L 73.3,3.8 L 75.6,4.0 L 77.8,4.2 L 80.0,4.3 L 82.2,4.5 L 84.4,4.7 L 86.7,4.8 L 88.9,5.0 L 91.1,5.2 L 93.3,5.3 L 95.6,5.5 L 97.8,5.7 L 100.0,5.8 L 102.2,6.0 L 104.4,6.2 L 106.7,6.3 L 108.9,6.5 L 111.1,6.7 L 113.3,6.8 L 115.6,7.0 L 117.8,7.2 L 120.0,7.4 L 122.2,7.5 L 124.4,7.7 L 126.7,7.9 L 128.9,8.0 L 131.1,8.2 L 133.3,8.4 L 135.6,8.5 L 137.8,8.7 L 140.0,8.9 L 142.2,9.0 L 144.4,9.2 L 146.7,9.4 L 148.9,9.5 L 151.1,9.7 L 153.3,9.9 L 155.6,10.0 L 157.8,10.2 L 160.0,10.4 L 162.2,10.5 L 164.4,10.7 L 166.7,10.9 L 168.9,11.0 L 171.1,11.2 L 173.3,11.4 L 175.6,11.5 L 177.8,11.7 L 180.0,11.9 L 182.2,12.0 L 184.4,12.2 L 186.7,12.4 L 188.9,12.5 L 191.1,12.7 L 193.3,12.9 L 195.6,13.0 L 197.8,13.2 L 200.0,13.4" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-good">healthy</span></td>
+        <td class="mono">1S-KU06-MBBS</td>
+        <td>Grillers 12 oz</td>
+        <td class="num">274</td>
+        <td class="num">2.43</td>
+        <td class="num">113d</td>
+        <td class="num bad"><span class="good">90d+</span></td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+30</span>
+          <span class="arr-add muted">+12d</span>
+          <span class="arr-po muted">PO #3108</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-08</span>
+          <span class="arr-qty">+60</span>
+          <span class="arr-add muted">+25d</span>
+          <span class="arr-po muted">PO #3147</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-22</span>
+          <span class="arr-qty">+180</span>
+          <span class="arr-add muted">+74d</span>
+          <span class="arr-po muted">PO #3155</span>
+        </div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="17.8" y1="2" x2="17.8" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="17.8" cy="4" r="2.5" fill="#557CF8"/><line x1="48.9" y1="2" x2="48.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="48.9" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,18.8 L 2.2,19.0 L 4.4,19.2 L 6.7,17.0 L 8.9,17.2 L 11.1,17.4 L 13.3,17.6 L 15.6,17.8 L 17.8,13.3 L 20.0,13.5 L 22.2,13.7 L 24.4,13.9 L 26.7,14.1 L 28.9,14.2 L 31.1,14.4 L 33.3,14.6 L 35.6,14.8 L 37.8,15.0 L 40.0,15.2 L 42.2,15.4 L 44.4,15.6 L 46.7,15.8 L 48.9,2.0 L 51.1,2.2 L 53.3,2.4 L 55.6,2.6 L 57.8,2.8 L 60.0,2.9 L 62.2,3.1 L 64.4,3.3 L 66.7,3.5 L 68.9,3.7 L 71.1,3.9 L 73.3,4.1 L 75.6,4.3 L 77.8,4.4 L 80.0,4.6 L 82.2,4.8 L 84.4,5.0 L 86.7,5.2 L 88.9,5.4 L 91.1,5.6 L 93.3,5.8 L 95.6,6.0 L 97.8,6.1 L 100.0,6.3 L 102.2,6.5 L 104.4,6.7 L 106.7,6.9 L 108.9,7.1 L 111.1,7.3 L 113.3,7.5 L 115.6,7.6 L 117.8,7.8 L 120.0,8.0 L 122.2,8.2 L 124.4,8.4 L 126.7,8.6 L 128.9,8.8 L 131.1,9.0 L 133.3,9.2 L 135.6,9.3 L 137.8,9.5 L 140.0,9.7 L 142.2,9.9 L 144.4,10.1 L 146.7,10.3 L 148.9,10.5 L 151.1,10.7 L 153.3,10.8 L 155.6,11.0 L 157.8,11.2 L 160.0,11.4 L 162.2,11.6 L 164.4,11.8 L 166.7,12.0 L 168.9,12.2 L 171.1,12.4 L 173.3,12.5 L 175.6,12.7 L 177.8,12.9 L 180.0,13.1 L 182.2,13.3 L 184.4,13.5 L 186.7,13.7 L 188.9,13.9 L 191.1,14.0 L 193.3,14.2 L 195.6,14.4 L 197.8,14.6 L 200.0,14.8" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-good">healthy</span></td>
+        <td class="mono">CBS-BULLY-10IN</td>
+        <td>Bully Sticks, 10 in, 6 ct</td>
+        <td class="num">51</td>
+        <td class="num">0.40</td>
+        <td class="num">128d</td>
+        <td class="num bad"><span class="good">90d+</span></td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-29</span>
+          <span class="arr-qty">+18</span>
+          <span class="arr-add muted">+45d</span>
+          <span class="arr-po muted">PO #3162</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-06-27</span>
+          <span class="arr-qty">+42</span>
+          <span class="arr-add muted">+105d</span>
+          <span class="arr-po muted">PO #3205</span>
+        </div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="64.4" y1="2" x2="64.4" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="64.4" cy="4" r="2.5" fill="#557CF8"/><line x1="128.9" y1="2" x2="128.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="128.9" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,17.9 L 2.2,18.1 L 4.4,18.3 L 6.7,18.4 L 8.9,18.6 L 11.1,18.8 L 13.3,19.0 L 15.6,19.1 L 17.8,19.3 L 20.0,19.5 L 22.2,19.7 L 24.4,19.8 L 26.7,20.0 L 28.9,20.2 L 31.1,20.4 L 33.3,20.5 L 35.6,20.7 L 37.8,20.9 L 40.0,21.0 L 42.2,21.2 L 44.4,21.4 L 46.7,21.6 L 48.9,21.7 L 51.1,21.9 L 53.3,22.1 L 55.6,22.3 L 57.8,22.4 L 60.0,22.6 L 62.2,22.8 L 64.4,15.2 L 66.7,15.3 L 68.9,15.5 L 71.1,15.7 L 73.3,15.8 L 75.6,16.0 L 77.8,16.2 L 80.0,16.4 L 82.2,16.5 L 84.4,16.7 L 86.7,16.9 L 88.9,17.1 L 91.1,17.2 L 93.3,17.4 L 95.6,17.6 L 97.8,17.8 L 100.0,17.9 L 102.2,18.1 L 104.4,18.3 L 106.7,18.4 L 108.9,18.6 L 111.1,18.8 L 113.3,19.0 L 115.6,19.1 L 117.8,19.3 L 120.0,19.5 L 122.2,19.7 L 124.4,19.8 L 126.7,20.0 L 128.9,2.0 L 131.1,2.2 L 133.3,2.3 L 135.6,2.5 L 137.8,2.7 L 140.0,2.9 L 142.2,3.0 L 144.4,3.2 L 146.7,3.4 L 148.9,3.6 L 151.1,3.7 L 153.3,3.9 L 155.6,4.1 L 157.8,4.3 L 160.0,4.4 L 162.2,4.6 L 164.4,4.8 L 166.7,4.9 L 168.9,5.1 L 171.1,5.3 L 173.3,5.5 L 175.6,5.6 L 177.8,5.8 L 180.0,6.0 L 182.2,6.2 L 184.4,6.3 L 186.7,6.5 L 188.9,6.7 L 191.1,6.8 L 193.3,7.0 L 195.6,7.2 L 197.8,7.4 L 200.0,7.5" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-good">healthy</span></td>
+        <td class="mono">CBS-PIG12</td>
+        <td>Pig Ear, 12 ct</td>
+        <td class="num">251</td>
+        <td class="num">1.57</td>
+        <td class="num">160d</td>
+        <td class="num bad"><span class="good">90d+</span></td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td><span class="muted">no open POs</span></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        
+        <path d="M 0.0,2.0 L 2.2,2.2 L 4.4,2.5 L 6.7,2.7 L 8.9,3.0 L 11.1,3.2 L 13.3,3.4 L 15.6,3.7 L 17.8,3.9 L 20.0,4.1 L 22.2,4.4 L 24.4,4.6 L 26.7,4.9 L 28.9,5.1 L 31.1,5.3 L 33.3,5.6 L 35.6,5.8 L 37.8,6.0 L 40.0,6.3 L 42.2,6.5 L 44.4,6.8 L 46.7,7.0 L 48.9,7.2 L 51.1,7.5 L 53.3,7.7 L 55.6,7.9 L 57.8,8.2 L 60.0,8.4 L 62.2,8.7 L 64.4,8.9 L 66.7,9.1 L 68.9,9.4 L 71.1,9.6 L 73.3,9.8 L 75.6,10.1 L 77.8,10.3 L 80.0,10.6 L 82.2,10.8 L 84.4,11.0 L 86.7,11.3 L 88.9,11.5 L 91.1,11.7 L 93.3,12.0 L 95.6,12.2 L 97.8,12.5 L 100.0,12.7 L 102.2,12.9 L 104.4,13.2 L 106.7,13.4 L 108.9,13.6 L 111.1,13.9 L 113.3,14.1 L 115.6,14.4 L 117.8,14.6 L 120.0,14.8 L 122.2,15.1 L 124.4,15.3 L 126.7,15.5 L 128.9,15.8 L 131.1,16.0 L 133.3,16.3 L 135.6,16.5 L 137.8,16.7 L 140.0,17.0 L 142.2,17.2 L 144.4,17.4 L 146.7,17.7 L 148.9,17.9 L 151.1,18.2 L 153.3,18.4 L 155.6,18.6 L 157.8,18.9 L 160.0,19.1 L 162.2,19.4 L 164.4,19.6 L 166.7,19.8 L 168.9,20.1 L 171.1,20.3 L 173.3,20.5 L 175.6,20.8 L 177.8,21.0 L 180.0,21.3 L 182.2,21.5 L 184.4,21.7 L 186.7,22.0 L 188.9,22.2 L 191.1,22.4 L 193.3,22.7 L 195.6,22.9 L 197.8,23.2 L 200.0,23.4" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-warn">excess</span></td>
+        <td class="mono">CBS 200-CT Chicken Feet</td>
+        <td>Chicken Feet 200 ct</td>
+        <td class="num">1,723</td>
+        <td class="num">7.13</td>
+        <td class="num">242d</td>
+        <td class="num bad"><span class="good">90d+</span></td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+418</span>
+          <span class="arr-add muted">+59d</span>
+          <span class="arr-po muted">PO #3108</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+239</span>
+          <span class="arr-add muted">+34d</span>
+          <span class="arr-po muted">PO #3116</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+81</span>
+          <span class="arr-add muted">+11d</span>
+          <span class="arr-po muted">PO #3127</span>
+        </div><div class="muted" style="font-size:10px">+1 more</div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="48.9" y1="2" x2="48.9" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="48.9" cy="4" r="2.5" fill="#557CF8"/>
+        <path d="M 0.0,14.7 L 2.2,14.8 L 4.4,14.9 L 6.7,4.2 L 8.9,4.3 L 11.1,4.4 L 13.3,4.5 L 15.6,4.6 L 17.8,4.7 L 20.0,4.8 L 22.2,4.9 L 24.4,5.0 L 26.7,5.1 L 28.9,5.2 L 31.1,5.3 L 33.3,5.5 L 35.6,5.6 L 37.8,5.7 L 40.0,5.8 L 42.2,5.9 L 44.4,6.0 L 46.7,6.1 L 48.9,2.0 L 51.1,2.1 L 53.3,2.2 L 55.6,2.3 L 57.8,2.4 L 60.0,2.5 L 62.2,2.6 L 64.4,2.7 L 66.7,2.8 L 68.9,2.9 L 71.1,3.0 L 73.3,3.2 L 75.6,3.3 L 77.8,3.4 L 80.0,3.5 L 82.2,3.6 L 84.4,3.7 L 86.7,3.8 L 88.9,3.9 L 91.1,4.0 L 93.3,4.1 L 95.6,4.2 L 97.8,4.3 L 100.0,4.4 L 102.2,4.5 L 104.4,4.6 L 106.7,4.7 L 108.9,4.8 L 111.1,4.9 L 113.3,5.0 L 115.6,5.1 L 117.8,5.2 L 120.0,5.3 L 122.2,5.5 L 124.4,5.6 L 126.7,5.7 L 128.9,5.8 L 131.1,5.9 L 133.3,6.0 L 135.6,6.1 L 137.8,6.2 L 140.0,6.3 L 142.2,6.4 L 144.4,6.5 L 146.7,6.6 L 148.9,6.7 L 151.1,6.8 L 153.3,6.9 L 155.6,7.0 L 157.8,7.1 L 160.0,7.2 L 162.2,7.3 L 164.4,7.4 L 166.7,7.5 L 168.9,7.7 L 171.1,7.8 L 173.3,7.9 L 175.6,8.0 L 177.8,8.1 L 180.0,8.2 L 182.2,8.3 L 184.4,8.4 L 186.7,8.5 L 188.9,8.6 L 191.1,8.7 L 193.3,8.8 L 195.6,8.9 L 197.8,9.0 L 200.0,9.1" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-warn">excess</span></td>
+        <td class="mono">CBS-BULLY-6IN</td>
+        <td>Bully Sticks, 6 in, 12 ct</td>
+        <td class="num">103</td>
+        <td class="num">0.23</td>
+        <td class="num">448d</td>
+        <td class="num bad"><span class="good">90d+</span></td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td><span class="muted">no open POs</span></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        
+        <path d="M 0.0,2.0 L 2.2,2.1 L 4.4,2.2 L 6.7,2.3 L 8.9,2.3 L 11.1,2.4 L 13.3,2.5 L 15.6,2.6 L 17.8,2.7 L 20.0,2.8 L 22.2,2.8 L 24.4,2.9 L 26.7,3.0 L 28.9,3.1 L 31.1,3.2 L 33.3,3.3 L 35.6,3.4 L 37.8,3.4 L 40.0,3.5 L 42.2,3.6 L 44.4,3.7 L 46.7,3.8 L 48.9,3.9 L 51.1,4.0 L 53.3,4.0 L 55.6,4.1 L 57.8,4.2 L 60.0,4.3 L 62.2,4.4 L 64.4,4.5 L 66.7,4.5 L 68.9,4.6 L 71.1,4.7 L 73.3,4.8 L 75.6,4.9 L 77.8,5.0 L 80.0,5.1 L 82.2,5.1 L 84.4,5.2 L 86.7,5.3 L 88.9,5.4 L 91.1,5.5 L 93.3,5.6 L 95.6,5.6 L 97.8,5.7 L 100.0,5.8 L 102.2,5.9 L 104.4,6.0 L 106.7,6.1 L 108.9,6.2 L 111.1,6.2 L 113.3,6.3 L 115.6,6.4 L 117.8,6.5 L 120.0,6.6 L 122.2,6.7 L 124.4,6.8 L 126.7,6.8 L 128.9,6.9 L 131.1,7.0 L 133.3,7.1 L 135.6,7.2 L 137.8,7.3 L 140.0,7.3 L 142.2,7.4 L 144.4,7.5 L 146.7,7.6 L 148.9,7.7 L 151.1,7.8 L 153.3,7.9 L 155.6,7.9 L 157.8,8.0 L 160.0,8.1 L 162.2,8.2 L 164.4,8.3 L 166.7,8.4 L 168.9,8.4 L 171.1,8.5 L 173.3,8.6 L 175.6,8.7 L 177.8,8.8 L 180.0,8.9 L 182.2,9.0 L 184.4,9.0 L 186.7,9.1 L 188.9,9.2 L 191.1,9.3 L 193.3,9.4 L 195.6,9.5 L 197.8,9.6 L 200.0,9.6" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-warn">excess</span></td>
+        <td class="mono">CBS-DUCKNECK</td>
+        <td>Duck Necks, 12 pk</td>
+        <td class="num">504</td>
+        <td class="num">1.07</td>
+        <td class="num">471d</td>
+        <td class="num bad"><span class="good">90d+</span></td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td>
+        <div class="arrival">
+          <span class="arr-date">2026-05-01</span>
+          <span class="arr-qty">+60</span>
+          <span class="arr-add muted">+56d</span>
+          <span class="arr-po muted">PO #3134</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+162</span>
+          <span class="arr-add muted">+151d</span>
+          <span class="arr-po muted">PO #3108</span>
+        </div>
+        <div class="arrival">
+          <span class="arr-date">2026-05-03 <span class="pill pill-bad" style="font-size:9px">overdue</span></span>
+          <span class="arr-qty">+162</span>
+          <span class="arr-add muted">+151d</span>
+          <span class="arr-po muted">PO #3116</span>
+        </div><div class="muted" style="font-size:10px">+1 more</div></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        <line x1="2.2" y1="2" x2="2.2" y2="40" stroke="#557CF8" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="2.2" cy="4" r="2.5" fill="#557CF8"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/><line x1="6.7" y1="2" x2="6.7" y2="40" stroke="#F19E39" stroke-width="1" stroke-dasharray="2,2" opacity="0.55"/><circle cx="6.7" cy="4" r="2.5" fill="#F19E39"/>
+        <path d="M 0.0,21.1 L 2.2,18.8 L 4.4,18.9 L 6.7,2.0 L 8.9,2.0 L 11.1,2.1 L 13.3,2.1 L 15.6,2.2 L 17.8,2.2 L 20.0,2.2 L 22.2,2.3 L 24.4,2.3 L 26.7,2.4 L 28.9,2.4 L 31.1,2.4 L 33.3,2.5 L 35.6,2.5 L 37.8,2.6 L 40.0,2.6 L 42.2,2.6 L 44.4,2.7 L 46.7,2.7 L 48.9,2.8 L 51.1,2.8 L 53.3,2.8 L 55.6,2.9 L 57.8,2.9 L 60.0,3.0 L 62.2,3.0 L 64.4,3.0 L 66.7,3.1 L 68.9,3.1 L 71.1,3.2 L 73.3,3.2 L 75.6,3.2 L 77.8,3.3 L 80.0,3.3 L 82.2,3.4 L 84.4,3.4 L 86.7,3.4 L 88.9,3.5 L 91.1,3.5 L 93.3,3.6 L 95.6,3.6 L 97.8,3.6 L 100.0,3.7 L 102.2,3.7 L 104.4,3.8 L 106.7,3.8 L 108.9,3.9 L 111.1,3.9 L 113.3,3.9 L 115.6,4.0 L 117.8,4.0 L 120.0,4.1 L 122.2,4.1 L 124.4,4.1 L 126.7,4.2 L 128.9,4.2 L 131.1,4.3 L 133.3,4.3 L 135.6,4.3 L 137.8,4.4 L 140.0,4.4 L 142.2,4.5 L 144.4,4.5 L 146.7,4.5 L 148.9,4.6 L 151.1,4.6 L 153.3,4.7 L 155.6,4.7 L 157.8,4.7 L 160.0,4.8 L 162.2,4.8 L 164.4,4.9 L 166.7,4.9 L 168.9,4.9 L 171.1,5.0 L 173.3,5.0 L 175.6,5.1 L 177.8,5.1 L 180.0,5.1 L 182.2,5.2 L 184.4,5.2 L 186.7,5.3 L 188.9,5.3 L 191.1,5.3 L 193.3,5.4 L 195.6,5.4 L 197.8,5.5 L 200.0,5.5" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-warn">excess</span></td>
+        <td class="mono">CBS-600108-COWEAR-10t</td>
+        <td>Cow Ear, 10 ct</td>
+        <td class="num">18</td>
+        <td class="num">0.03</td>
+        <td class="num">600d</td>
+        <td class="num bad"><span class="good">90d+</span></td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td><span class="muted">no open POs</span></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        
+        <path d="M 0.0,2.0 L 2.2,2.1 L 4.4,2.1 L 6.7,2.2 L 8.9,2.3 L 11.1,2.3 L 13.3,2.4 L 15.6,2.4 L 17.8,2.5 L 20.0,2.6 L 22.2,2.6 L 24.4,2.7 L 26.7,2.8 L 28.9,2.8 L 31.1,2.9 L 33.3,3.0 L 35.6,3.0 L 37.8,3.1 L 40.0,3.1 L 42.2,3.2 L 44.4,3.3 L 46.7,3.3 L 48.9,3.4 L 51.1,3.5 L 53.3,3.5 L 55.6,3.6 L 57.8,3.6 L 60.0,3.7 L 62.2,3.8 L 64.4,3.8 L 66.7,3.9 L 68.9,4.0 L 71.1,4.0 L 73.3,4.1 L 75.6,4.2 L 77.8,4.2 L 80.0,4.3 L 82.2,4.3 L 84.4,4.4 L 86.7,4.5 L 88.9,4.5 L 91.1,4.6 L 93.3,4.7 L 95.6,4.7 L 97.8,4.8 L 100.0,4.9 L 102.2,4.9 L 104.4,5.0 L 106.7,5.0 L 108.9,5.1 L 111.1,5.2 L 113.3,5.2 L 115.6,5.3 L 117.8,5.4 L 120.0,5.4 L 122.2,5.5 L 124.4,5.5 L 126.7,5.6 L 128.9,5.7 L 131.1,5.7 L 133.3,5.8 L 135.6,5.9 L 137.8,5.9 L 140.0,6.0 L 142.2,6.1 L 144.4,6.1 L 146.7,6.2 L 148.9,6.2 L 151.1,6.3 L 153.3,6.4 L 155.6,6.4 L 157.8,6.5 L 160.0,6.6 L 162.2,6.6 L 164.4,6.7 L 166.7,6.8 L 168.9,6.8 L 171.1,6.9 L 173.3,6.9 L 175.6,7.0 L 177.8,7.1 L 180.0,7.1 L 182.2,7.2 L 184.4,7.3 L 186.7,7.3 L 188.9,7.4 L 191.1,7.4 L 193.3,7.5 L 195.6,7.6 L 197.8,7.6 L 200.0,7.7" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-warn">excess</span></td>
+        <td class="mono">CBS-TRACHEA-STRIPS</td>
+        <td>Trachea Strips, 6 in, 12 ct</td>
+        <td class="num">295</td>
+        <td class="num">0.07</td>
+        <td class="num">4214d</td>
+        <td class="num bad"><span class="good">90d+</span></td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td><span class="muted">no open POs</span></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        
+        <path d="M 0.0,2.0 L 2.2,2.0 L 4.4,2.0 L 6.7,2.0 L 8.9,2.0 L 11.1,2.0 L 13.3,2.1 L 15.6,2.1 L 17.8,2.1 L 20.0,2.1 L 22.2,2.1 L 24.4,2.1 L 26.7,2.1 L 28.9,2.1 L 31.1,2.1 L 33.3,2.1 L 35.6,2.1 L 37.8,2.2 L 40.0,2.2 L 42.2,2.2 L 44.4,2.2 L 46.7,2.2 L 48.9,2.2 L 51.1,2.2 L 53.3,2.2 L 55.6,2.2 L 57.8,2.2 L 60.0,2.2 L 62.2,2.3 L 64.4,2.3 L 66.7,2.3 L 68.9,2.3 L 71.1,2.3 L 73.3,2.3 L 75.6,2.3 L 77.8,2.3 L 80.0,2.3 L 82.2,2.3 L 84.4,2.3 L 86.7,2.4 L 88.9,2.4 L 91.1,2.4 L 93.3,2.4 L 95.6,2.4 L 97.8,2.4 L 100.0,2.4 L 102.2,2.4 L 104.4,2.4 L 106.7,2.4 L 108.9,2.4 L 111.1,2.5 L 113.3,2.5 L 115.6,2.5 L 117.8,2.5 L 120.0,2.5 L 122.2,2.5 L 124.4,2.5 L 126.7,2.5 L 128.9,2.5 L 131.1,2.5 L 133.3,2.5 L 135.6,2.6 L 137.8,2.6 L 140.0,2.6 L 142.2,2.6 L 144.4,2.6 L 146.7,2.6 L 148.9,2.6 L 151.1,2.6 L 153.3,2.6 L 155.6,2.6 L 157.8,2.6 L 160.0,2.6 L 162.2,2.7 L 164.4,2.7 L 166.7,2.7 L 168.9,2.7 L 171.1,2.7 L 173.3,2.7 L 175.6,2.7 L 177.8,2.7 L 180.0,2.7 L 182.2,2.7 L 184.4,2.7 L 186.7,2.8 L 188.9,2.8 L 191.1,2.8 L 193.3,2.8 L 195.6,2.8 L 197.8,2.8 L 200.0,2.8" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr><tr>
+        <td><span class="pill pill-warn">excess</span></td>
+        <td class="mono">CBS-TURKEYTENDON-3oz</td>
+        <td>Turkey Tendons 3 oz</td>
+        <td class="num">914</td>
+        <td class="num">0.03</td>
+        <td class="num">30467d</td>
+        <td class="num bad"><span class="good">90d+</span></td>
+        <td class="num"><span class="good">covered 90d</span></td>
+        <td><span class="muted">no open POs</span></td>
+        <td><svg width="200" height="42" viewBox="0 0 200 42" style="display:block">
+        <line x1="0" y1="40" x2="200" y2="40" stroke="#ddd" stroke-width="1"/>
+        
+        <path d="M 0.0,2.0 L 2.2,2.0 L 4.4,2.0 L 6.7,2.0 L 8.9,2.0 L 11.1,2.0 L 13.3,2.0 L 15.6,2.0 L 17.8,2.0 L 20.0,2.0 L 22.2,2.0 L 24.4,2.0 L 26.7,2.0 L 28.9,2.0 L 31.1,2.0 L 33.3,2.0 L 35.6,2.0 L 37.8,2.0 L 40.0,2.0 L 42.2,2.0 L 44.4,2.0 L 46.7,2.0 L 48.9,2.0 L 51.1,2.0 L 53.3,2.0 L 55.6,2.0 L 57.8,2.0 L 60.0,2.0 L 62.2,2.0 L 64.4,2.0 L 66.7,2.0 L 68.9,2.0 L 71.1,2.0 L 73.3,2.0 L 75.6,2.0 L 77.8,2.0 L 80.0,2.0 L 82.2,2.0 L 84.4,2.0 L 86.7,2.0 L 88.9,2.0 L 91.1,2.1 L 93.3,2.1 L 95.6,2.1 L 97.8,2.1 L 100.0,2.1 L 102.2,2.1 L 104.4,2.1 L 106.7,2.1 L 108.9,2.1 L 111.1,2.1 L 113.3,2.1 L 115.6,2.1 L 117.8,2.1 L 120.0,2.1 L 122.2,2.1 L 124.4,2.1 L 126.7,2.1 L 128.9,2.1 L 131.1,2.1 L 133.3,2.1 L 135.6,2.1 L 137.8,2.1 L 140.0,2.1 L 142.2,2.1 L 144.4,2.1 L 146.7,2.1 L 148.9,2.1 L 151.1,2.1 L 153.3,2.1 L 155.6,2.1 L 157.8,2.1 L 160.0,2.1 L 162.2,2.1 L 164.4,2.1 L 166.7,2.1 L 168.9,2.1 L 171.1,2.1 L 173.3,2.1 L 175.6,2.1 L 177.8,2.1 L 180.0,2.1 L 182.2,2.1 L 184.4,2.1 L 186.7,2.1 L 188.9,2.1 L 191.1,2.1 L 193.3,2.1 L 195.6,2.1 L 197.8,2.1 L 200.0,2.1" fill="none" stroke="#1A1A1A" stroke-width="1.5"/>
+        
+    </svg></td>
+    </tr></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>30-Day Daily Sales</h2>
+    <div class="note">Daily revenue trend across all CBS SKUs — shape gives context for velocity changes downstream.</div>
+    <div class="spark"><div class="bar" style="height:75%;" title="03/31: $13,200 · 331 units"></div><div class="bar" style="height:63%;" title="04/01: $11,081 · 296 units"></div><div class="bar" style="height:70%;" title="04/02: $12,389 · 333 units"></div><div class="bar" style="height:69%;" title="04/03: $12,229 · 311 units"></div><div class="bar" style="height:62%;" title="04/04: $10,972 · 286 units"></div><div class="bar" style="height:61%;" title="04/05: $10,865 · 283 units"></div><div class="bar" style="height:57%;" title="04/06: $10,159 · 258 units"></div><div class="bar" style="height:62%;" title="04/07: $10,952 · 278 units"></div><div class="bar" style="height:63%;" title="04/08: $11,072 · 278 units"></div><div class="bar" style="height:51%;" title="04/09: $9,047 · 247 units"></div><div class="bar" style="height:49%;" title="04/10: $8,586 · 219 units"></div><div class="bar" style="height:51%;" title="04/11: $8,946 · 216 units"></div><div class="bar" style="height:65%;" title="04/12: $11,420 · 294 units"></div><div class="bar" style="height:43%;" title="04/13: $7,654 · 204 units"></div><div class="bar" style="height:42%;" title="04/14: $7,461 · 200 units"></div><div class="bar" style="height:50%;" title="04/15: $8,927 · 244 units"></div><div class="bar" style="height:56%;" title="04/16: $9,831 · 276 units"></div><div class="bar" style="height:44%;" title="04/17: $7,856 · 205 units"></div><div class="bar" style="height:47%;" title="04/18: $8,331 · 233 units"></div><div class="bar" style="height:59%;" title="04/19: $10,375 · 271 units"></div><div class="bar" style="height:84%;" title="04/20: $14,866 · 451 units"></div><div class="bar" style="height:54%;" title="04/21: $9,544 · 256 units"></div><div class="bar" style="height:80%;" title="04/22: $14,213 · 322 units"></div><div class="bar" style="height:69%;" title="04/23: $12,243 · 309 units"></div><div class="bar" style="height:63%;" title="04/24: $11,075 · 257 units"></div><div class="bar" style="height:70%;" title="04/25: $12,404 · 314 units"></div><div class="bar" style="height:80%;" title="04/26: $14,178 · 356 units"></div><div class="bar" style="height:77%;" title="04/27: $13,629 · 336 units"></div><div class="bar" style="height:100%;" title="04/28: $17,688 · 378 units"></div><div class="bar" style="height:66%;" title="04/29: $11,687 · 313 units"></div><div class="bar" style="height:71%;" title="04/30: $12,540 · 312 units"></div></div>
+    <div class="spark-labels"><span>03/31</span><span>04/05</span><span>04/10</span><span>04/15</span><span>04/20</span><span>04/25</span><span>04/30</span></div>
+  </section>
+
+  <section class="alt">
+    <h2>Product Line Rollup</h2>
+    <div class="scroll-x"><table>
+      <thead><tr><th>Product Line</th><th>SKUs</th><th>OH</th><th>Inbound</th>
+      <th>Units 30d</th><th>Revenue 30d</th><th>Critical</th><th>Excess</th></tr></thead>
+      <tbody><tr>
+        <td><b>Pig Ears</b></td>
+        <td class="num">5</td>
+        <td class="num">5,636</td>
+        <td class="num">459</td>
+        <td class="num">2,693</td>
+        <td class="num">$148,995</td>
+        <td class="num bad">2</td>
+        <td class="num ">0</td></tr><tr>
+        <td><b>Chicken Feet</b></td>
+        <td class="num">3</td>
+        <td class="num">8,984</td>
+        <td class="num">3,475</td>
+        <td class="num">4,070</td>
+        <td class="num">$123,459</td>
+        <td class="num bad">1</td>
+        <td class="num warn">1</td></tr><tr>
+        <td><b>Duck Feet</b></td>
+        <td class="num">2</td>
+        <td class="num">3,041</td>
+        <td class="num">565</td>
+        <td class="num">1,357</td>
+        <td class="num">$51,826</td>
+        <td class="num bad">1</td>
+        <td class="num ">0</td></tr><tr>
+        <td><b>Turkey Tendons</b></td>
+        <td class="num">2</td>
+        <td class="num">991</td>
+        <td class="num">678</td>
+        <td class="num">267</td>
+        <td class="num">$7,107</td>
+        <td class="num bad">1</td>
+        <td class="num warn">1</td></tr><tr>
+        <td><b>Duck Neck</b></td>
+        <td class="num">1</td>
+        <td class="num">504</td>
+        <td class="num">384</td>
+        <td class="num">128</td>
+        <td class="num">$4,517</td>
+        <td class="num ">0</td>
+        <td class="num warn">1</td></tr><tr>
+        <td><b>Bully</b></td>
+        <td class="num">9</td>
+        <td class="num">169</td>
+        <td class="num">180</td>
+        <td class="num">88</td>
+        <td class="num">$2,666</td>
+        <td class="num ">0</td>
+        <td class="num ">0</td></tr><tr>
+        <td><b>Grillers</b></td>
+        <td class="num">1</td>
+        <td class="num">274</td>
+        <td class="num">420</td>
+        <td class="num">98</td>
+        <td class="num">$1,959</td>
+        <td class="num ">0</td>
+        <td class="num ">0</td></tr><tr>
+        <td><b>Bully Bites</b></td>
+        <td class="num">1</td>
+        <td class="num">71</td>
+        <td class="num">110</td>
+        <td class="num">58</td>
+        <td class="num">$1,757</td>
+        <td class="num ">0</td>
+        <td class="num ">0</td></tr><tr>
+        <td><b>Bully Sticks</b></td>
+        <td class="num">4</td>
+        <td class="num">154</td>
+        <td class="num">0</td>
+        <td class="num">35</td>
+        <td class="num">$1,261</td>
+        <td class="num ">0</td>
+        <td class="num warn">1</td></tr><tr>
+        <td><b>Rawhide</b></td>
+        <td class="num">4</td>
+        <td class="num">64</td>
+        <td class="num">2</td>
+        <td class="num">31</td>
+        <td class="num">$1,116</td>
+        <td class="num ">0</td>
+        <td class="num ">0</td></tr><tr>
+        <td><b>Cow Ears</b></td>
+        <td class="num">3</td>
+        <td class="num">19</td>
+        <td class="num">36</td>
+        <td class="num">25</td>
+        <td class="num">$438</td>
+        <td class="num bad">1</td>
+        <td class="num warn">1</td></tr><tr>
+        <td><b>Beef Trachea</b></td>
+        <td class="num">4</td>
+        <td class="num">295</td>
+        <td class="num">384</td>
+        <td class="num">17</td>
+        <td class="num">$319</td>
+        <td class="num ">0</td>
+        <td class="num warn">1</td></tr><tr>
+        <td><b>Bacon Roll</b></td>
+        <td class="num">4</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">$0</td>
+        <td class="num ">0</td>
+        <td class="num ">0</td></tr><tr>
+        <td><b>Barnyard Mix</b></td>
+        <td class="num">2</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">$0</td>
+        <td class="num ">0</td>
+        <td class="num ">0</td></tr><tr>
+        <td><b>Pork Chews</b></td>
+        <td class="num">4</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">$0</td>
+        <td class="num ">0</td>
+        <td class="num ">0</td></tr><tr>
+        <td><b>Turkey Necks</b></td>
+        <td class="num">1</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">$0</td>
+        <td class="num ">0</td>
+        <td class="num ">0</td></tr><tr>
+        <td><b>Twist</b></td>
+        <td class="num">1</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">$0</td>
+        <td class="num ">0</td>
+        <td class="num ">0</td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Full Inventory by ASIN <span class="count">51</span></h2>
+    <div class="note">Every CBS SKU/ASIN with current inventory state, sales, traffic, conversion, stockout days and variance flags. Status pill summarizes risk; flag column highlights anomalies (stockout history, listing alerts, velocity swings, over-orders).</div>
+    <div class="toolbar">
+      <span class="tab active" data-filter="all">All</span>
+      <span class="tab" data-filter="crit">Critical</span>
+      <span class="tab" data-filter="warn">Warning</span>
+      <span class="tab" data-filter="excess">Excess</span>
+      <span class="tab" data-filter="ok">Healthy</span>
+    </div>
+    <div class="scroll-x"><table id="full-tbl">
+      <thead><tr>
+        <th>Status</th><th>SKU</th><th>ASIN</th><th>Item</th><th>Line</th>
+        <th>OH</th><th>Reserved</th><th>Inbound</th><th>Open PO</th>
+        <th>v30/d</th><th>Δ (7d vs 30d)</th>
+        <th>DOS (OH)</th><th>DOS (+Pipe)</th>
+        <th>Rev 30d</th><th>Sessions 30d</th><th>CVR 30d</th>
+        <th>Stockout 30d</th><th>Flags</th>
+      </tr></thead>
+      <tbody><tr data-status="crit">
+        <td><span class="pill pill-bad">critical</span></td>
+        <td class="mono">CBS-600107-COWEAR-5ct</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B0813X1F14" target="_blank">B0813X1F14</a></td>
+        <td>Cow Ear, 5 ct</td>
+        <td class="muted">Cow Ears</td>
+        <td class="num">1</td>
+        <td class="num">1</td>
+        <td class="num">0</td>
+        <td class="num">112</td>
+        <td class="num">0.63</td>
+        <td class="num good">▲ +59%</td>
+        <td class="num">2d</td>
+        <td class="num">2d</td>
+        <td class="num">$408</td>
+        <td class="num">82</td>
+        <td class="num">31.7%</td>
+        <td class="num"><span class="bad">3d</span></td>
+        <td><span class="flag fbad">3d stockout</span> <span class="flag fbad">5 alerts (7d)</span> <span class="flag fwarn">velocity +59%</span> <span class="flag fbad">below LT cover</span></td>
+    </tr><tr data-status="crit">
+        <td><span class="pill pill-bad">critical</span></td>
+        <td class="mono">CBS-TURKEYTENDON-8oz</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B0CGBLSL5G" target="_blank">B0CGBLSL5G</a></td>
+        <td>Turkey Tendons 8 oz</td>
+        <td class="muted">Turkey Tendons</td>
+        <td class="num">77</td>
+        <td class="num">73</td>
+        <td class="num">8</td>
+        <td class="num">1,439</td>
+        <td class="num">7.10</td>
+        <td class="num bad">▼ -86%</td>
+        <td class="num">11d</td>
+        <td class="num">12d</td>
+        <td class="num">$6,208</td>
+        <td class="num">303</td>
+        <td class="num">67.7%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fbad">13 alerts (7d)</span> <span class="flag fwarn">velocity -86%</span> <span class="flag fwarn">open POs add 203d</span> <span class="flag fbad">below LT cover</span></td>
+    </tr><tr data-status="crit">
+        <td><span class="pill pill-bad">critical</span></td>
+        <td class="mono">CBS-DuckFeet90</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B0DB3BHLR2" target="_blank">B0DB3BHLR2</a></td>
+        <td>Duck Feet 90 ct</td>
+        <td class="muted">Duck Feet</td>
+        <td class="num">462</td>
+        <td class="num">113</td>
+        <td class="num">526</td>
+        <td class="num">3,734</td>
+        <td class="num">13.47</td>
+        <td class="num bad">▼ -55%</td>
+        <td class="num">34d</td>
+        <td class="num">73d</td>
+        <td class="num">$22,256</td>
+        <td class="num">648</td>
+        <td class="num">55.4%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fbad">18 alerts (7d)</span> <span class="flag fwarn">velocity -55%</span> <span class="flag fwarn">open POs add 277d</span> <span class="flag fbad">below LT cover</span></td>
+    </tr><tr data-status="crit">
+        <td><span class="pill pill-bad">critical</span></td>
+        <td class="mono">MF-LJ5T-GXD0</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BH5HLLT" target="_blank">B07BH5HLLT</a></td>
+        <td>Chicken Feet, 30 ct</td>
+        <td class="muted">Chicken Feet</td>
+        <td class="num">3,505</td>
+        <td class="num">380</td>
+        <td class="num">1,796</td>
+        <td class="num">7,386</td>
+        <td class="num">73.17</td>
+        <td class="num good">▲ +8%</td>
+        <td class="num">48d</td>
+        <td class="num">72d</td>
+        <td class="num">$48,592</td>
+        <td class="num">3,846</td>
+        <td class="num">58.8%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fbad">below LT cover</span></td>
+    </tr><tr data-status="crit">
+        <td><span class="pill pill-bad">critical</span></td>
+        <td class="mono">CBS-PIGEAR30</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07GSDZP36" target="_blank">B07GSDZP36</a></td>
+        <td>Pig Ear, 30 ct</td>
+        <td class="muted">Pig Ears</td>
+        <td class="num">4,580</td>
+        <td class="num">1,155</td>
+        <td class="num">56</td>
+        <td class="num">6,508</td>
+        <td class="num">67.67</td>
+        <td class="num good">▲ +5%</td>
+        <td class="num">68d</td>
+        <td class="num">68d</td>
+        <td class="num">$136,717</td>
+        <td class="num">3,161</td>
+        <td class="num">69.5%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fbad">5 alerts (7d)</span> <span class="flag fbad">below LT cover</span></td>
+    </tr><tr data-status="crit">
+        <td><span class="pill pill-bad">critical</span></td>
+        <td class="mono">CBS-PIGEAR-6ct</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B081FG6V2K" target="_blank">B081FG6V2K</a></td>
+        <td>Pig Ear, 6 ct</td>
+        <td class="muted">Pig Ears</td>
+        <td class="num">199</td>
+        <td class="num">17</td>
+        <td class="num">2</td>
+        <td class="num">216</td>
+        <td class="num">2.53</td>
+        <td class="num good">▲ +47%</td>
+        <td class="num">79d</td>
+        <td class="num">79d</td>
+        <td class="num">$2,239</td>
+        <td class="num">641</td>
+        <td class="num">15.6%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fwarn">velocity +47%</span> <span class="flag fbad">below LT cover</span></td>
+    </tr><tr data-status="warn">
+        <td><span class="pill pill-warn">warning</span></td>
+        <td class="mono">CBS-BULLYBITES</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B094SBWHNH" target="_blank">B094SBWHNH</a></td>
+        <td>Bully Bites, 2-4 in, 1 lb</td>
+        <td class="muted">Bully Bites</td>
+        <td class="num">71</td>
+        <td class="num">13</td>
+        <td class="num">110</td>
+        <td class="num">171</td>
+        <td class="num">1.60</td>
+        <td class="num good">▲ +16%</td>
+        <td class="num">44d</td>
+        <td class="num">113d</td>
+        <td class="num">$1,757</td>
+        <td class="num">71</td>
+        <td class="num">80.3%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="warn">
+        <td><span class="pill pill-warn">warning</span></td>
+        <td class="mono">CBS-CHIPS5LB</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07V3TJTM7" target="_blank">B07V3TJTM7</a></td>
+        <td>Rawhide Chips, 3 lb</td>
+        <td class="muted">Rawhide</td>
+        <td class="num">64</td>
+        <td class="num">7</td>
+        <td class="num">2</td>
+        <td class="num">38</td>
+        <td class="num">0.80</td>
+        <td class="num good">▲ +25%</td>
+        <td class="num">80d</td>
+        <td class="num">82d</td>
+        <td class="num">$1,116</td>
+        <td class="num">87</td>
+        <td class="num">29.9%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="warn">
+        <td><span class="pill pill-warn">warning</span></td>
+        <td class="mono">CBS-PIG18</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07THD7M9X" target="_blank">B07THD7M9X</a></td>
+        <td>Pig Ear, 18 ct</td>
+        <td class="muted">Pig Ears</td>
+        <td class="num">277</td>
+        <td class="num">31</td>
+        <td class="num">0</td>
+        <td class="num">218</td>
+        <td class="num">3.27</td>
+        <td class="num good">▲ +5%</td>
+        <td class="num">85d</td>
+        <td class="num">85d</td>
+        <td class="num">$4,559</td>
+        <td class="num">293</td>
+        <td class="num">36.5%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="warn">
+        <td><span class="pill pill-warn">warning</span></td>
+        <td class="mono">CBS-CHICKENFT60</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B085ZRSLS2" target="_blank">B085ZRSLS2</a></td>
+        <td>Chicken Feet, 60 ct</td>
+        <td class="muted">Chicken Feet</td>
+        <td class="num">3,756</td>
+        <td class="num">566</td>
+        <td class="num">824</td>
+        <td class="num">5,314</td>
+        <td class="num">41.10</td>
+        <td class="num bad">▼ -46%</td>
+        <td class="num">91d</td>
+        <td class="num">111d</td>
+        <td class="num">$52,730</td>
+        <td class="num">2,171</td>
+        <td class="num">68.3%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fwarn">velocity -46%</span></td>
+    </tr><tr data-status="warn">
+        <td><span class="pill pill-warn">warning</span></td>
+        <td class="mono">CBS-DuckFeet30</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BH6Q6TP" target="_blank">B07BH6Q6TP</a></td>
+        <td>Duck Feet, 30 ct</td>
+        <td class="muted">Duck Feet</td>
+        <td class="num">2,579</td>
+        <td class="num">290</td>
+        <td class="num">39</td>
+        <td class="num">4,158</td>
+        <td class="num">27.03</td>
+        <td class="num bad">▼ -60%</td>
+        <td class="num">95d</td>
+        <td class="num">97d</td>
+        <td class="num">$29,570</td>
+        <td class="num">1,375</td>
+        <td class="num">69.2%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fbad">4 alerts (7d)</span> <span class="flag fwarn">velocity -60%</span></td>
+    </tr><tr data-status="excess">
+        <td><span class="pill pill-warn">excess</span></td>
+        <td class="mono">CBS 200-CT Chicken Feet</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B0C34LB478" target="_blank">B0C34LB478</a></td>
+        <td>Chicken Feet 200 ct</td>
+        <td class="muted">Chicken Feet</td>
+        <td class="num">1,723</td>
+        <td class="num">216</td>
+        <td class="num">855</td>
+        <td class="num">1,023</td>
+        <td class="num">7.13</td>
+        <td class="num bad">▼ -80%</td>
+        <td class="num">242d</td>
+        <td class="num">362d</td>
+        <td class="num">$22,138</td>
+        <td class="num">313</td>
+        <td class="num">75.7%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fbad">45 alerts (7d)</span> <span class="flag fwarn">velocity -80%</span></td>
+    </tr><tr data-status="excess">
+        <td><span class="pill pill-warn">excess</span></td>
+        <td class="mono">CBS-BULLY-6IN</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B094S7ZYLS" target="_blank">B094S7ZYLS</a></td>
+        <td>Bully Sticks, 6 in, 12 ct</td>
+        <td class="muted">Bully Sticks</td>
+        <td class="num">103</td>
+        <td class="num">2</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.23</td>
+        <td class="num good">▲ +87%</td>
+        <td class="num">448d</td>
+        <td class="num">448d</td>
+        <td class="num">$351</td>
+        <td class="num">36</td>
+        <td class="num">22.2%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fwarn">velocity +87%</span></td>
+    </tr><tr data-status="excess">
+        <td><span class="pill pill-warn">excess</span></td>
+        <td class="mono">CBS-DUCKNECK</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B0955688S5" target="_blank">B0955688S5</a></td>
+        <td>Duck Necks, 12 pk</td>
+        <td class="muted">Duck Neck</td>
+        <td class="num">504</td>
+        <td class="num">61</td>
+        <td class="num">384</td>
+        <td class="num">510</td>
+        <td class="num">1.07</td>
+        <td class="num bad">▼ -73%</td>
+        <td class="num">471d</td>
+        <td class="num">830d</td>
+        <td class="num">$4,517</td>
+        <td class="num">261</td>
+        <td class="num">49.8%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fbad">6 alerts (7d)</span> <span class="flag fwarn">velocity -73%</span> <span class="flag fwarn">open POs add 477d</span></td>
+    </tr><tr data-status="excess">
+        <td><span class="pill pill-warn">excess</span></td>
+        <td class="mono">CBS-600108-COWEAR-10t</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B0813X8PG2" target="_blank">B0813X8PG2</a></td>
+        <td>Cow Ear, 10 ct</td>
+        <td class="muted">Cow Ears</td>
+        <td class="num">18</td>
+        <td class="num">1</td>
+        <td class="num">36</td>
+        <td class="num">0</td>
+        <td class="num">0.03</td>
+        <td class="num bad">▼ -100%</td>
+        <td class="num">600d</td>
+        <td class="num">1800d</td>
+        <td class="num">$30</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="bad">28d</span></td>
+        <td><span class="flag fbad">28d stockout</span> <span class="flag fbad">4 alerts (7d)</span> <span class="flag fwarn">velocity -100%</span></td>
+    </tr><tr data-status="excess">
+        <td><span class="pill pill-warn">excess</span></td>
+        <td class="mono">CBS-TRACHEA-STRIPS</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B0954NB2HB" target="_blank">B0954NB2HB</a></td>
+        <td>Trachea Strips, 6 in, 12 ct</td>
+        <td class="muted">Beef Trachea</td>
+        <td class="num">295</td>
+        <td class="num">18</td>
+        <td class="num">384</td>
+        <td class="num">0</td>
+        <td class="num">0.07</td>
+        <td class="num bad">▼ -100%</td>
+        <td class="num">4214d</td>
+        <td class="num">9700d</td>
+        <td class="num">$319</td>
+        <td class="num">2</td>
+        <td class="num">800.0%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fbad">5 alerts (7d)</span> <span class="flag fwarn">velocity -100%</span></td>
+    </tr><tr data-status="excess">
+        <td><span class="pill pill-warn">excess</span></td>
+        <td class="mono">CBS-TURKEYTENDON-3oz</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B0CGC4SM4M" target="_blank">B0CGC4SM4M</a></td>
+        <td>Turkey Tendons 3 oz</td>
+        <td class="muted">Turkey Tendons</td>
+        <td class="num">914</td>
+        <td class="num">13</td>
+        <td class="num">670</td>
+        <td class="num">0</td>
+        <td class="num">0.03</td>
+        <td class="num bad">▼ -100%</td>
+        <td class="num">30467d</td>
+        <td class="num">52800d</td>
+        <td class="num">$899</td>
+        <td class="num">100</td>
+        <td class="num">45.0%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fbad">3 alerts (7d)</span> <span class="flag fwarn">velocity -100%</span></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-good">healthy</span></td>
+        <td class="mono">EM-H2D4-RLNT</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BH513XX" target="_blank">B07BH513XX</a></td>
+        <td>Bully Spirals, 6 pk</td>
+        <td class="muted">Bully</td>
+        <td class="num">169</td>
+        <td class="num">15</td>
+        <td class="num">180</td>
+        <td class="num">258</td>
+        <td class="num">2.17</td>
+        <td class="num bad">▼ -80%</td>
+        <td class="num">78d</td>
+        <td class="num">161d</td>
+        <td class="num">$2,666</td>
+        <td class="num">56</td>
+        <td class="num">135.7%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fbad">8 alerts (7d)</span> <span class="flag fwarn">velocity -80%</span></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-good">healthy</span></td>
+        <td class="mono">YL-3U59-R0FN</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B08977F552" target="_blank">B08977F552</a></td>
+        <td>Pig Ear Strips, 1 lb</td>
+        <td class="muted">Pig Ears</td>
+        <td class="num">329</td>
+        <td class="num">29</td>
+        <td class="num">176</td>
+        <td class="num">201</td>
+        <td class="num">3.83</td>
+        <td class="num good">▲ +8%</td>
+        <td class="num">86d</td>
+        <td class="num">132d</td>
+        <td class="num">$3,711</td>
+        <td class="num">373</td>
+        <td class="num">33.8%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-good">healthy</span></td>
+        <td class="mono">1S-KU06-MBBS</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B00KAXQ1AK" target="_blank">B00KAXQ1AK</a></td>
+        <td>Grillers 12 oz</td>
+        <td class="muted">Grillers</td>
+        <td class="num">274</td>
+        <td class="num">38</td>
+        <td class="num">420</td>
+        <td class="num">270</td>
+        <td class="num">2.43</td>
+        <td class="num bad">▼ -53%</td>
+        <td class="num">113d</td>
+        <td class="num">286d</td>
+        <td class="num">$1,959</td>
+        <td class="num">37</td>
+        <td class="num">224.3%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fbad">13 alerts (7d)</span> <span class="flag fwarn">velocity -53%</span></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-good">healthy</span></td>
+        <td class="mono">CBS-BULLY-10IN</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B094SL7TWK" target="_blank">B094SL7TWK</a></td>
+        <td>Bully Sticks, 10 in, 6 ct</td>
+        <td class="muted">Bully Sticks</td>
+        <td class="num">51</td>
+        <td class="num">1</td>
+        <td class="num">0</td>
+        <td class="num">60</td>
+        <td class="num">0.40</td>
+        <td class="num good">▲ +42%</td>
+        <td class="num">128d</td>
+        <td class="num">128d</td>
+        <td class="num">$910</td>
+        <td class="num">104</td>
+        <td class="num">25.0%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td><span class="flag fwarn">velocity +42%</span></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-good">healthy</span></td>
+        <td class="mono">CBS-PIG12</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B09881P2SM" target="_blank">B09881P2SM</a></td>
+        <td>Pig Ear, 12 ct</td>
+        <td class="muted">Pig Ears</td>
+        <td class="num">251</td>
+        <td class="num">7</td>
+        <td class="num">225</td>
+        <td class="num">0</td>
+        <td class="num">1.57</td>
+        <td class="num good">▲ +9%</td>
+        <td class="num">160d</td>
+        <td class="num">303d</td>
+        <td class="num">$1,769</td>
+        <td class="num">266</td>
+        <td class="num">21.8%</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">W7-DD14-M3VA</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BGSGHMP" target="_blank">B07BGSGHMP</a></td>
+        <td>Beef Trachea 4 in 12 pk</td>
+        <td class="muted">Beef Trachea</td>
+        <td class="num">0</td>
+        <td class="num">1</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="bad">30d</span></td>
+        <td><span class="flag fbad">30d stockout</span></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">CBS-TRACHEA-3PK</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B094S59W7Y" target="_blank">B094S59W7Y</a></td>
+        <td>Trachea, 10 in, 3 ct</td>
+        <td class="muted">Beef Trachea</td>
+        <td class="num">0</td>
+        <td class="num">2</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="bad">30d</span></td>
+        <td><span class="flag fbad">30d stockout</span></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">CBS-TRACHEA-6PK</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B0954Q1NQZ" target="_blank">B0954Q1NQZ</a></td>
+        <td>Trachea, 6 in, 6 ct</td>
+        <td class="muted">Beef Trachea</td>
+        <td class="num">0</td>
+        <td class="num">1</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="bad">30d</span></td>
+        <td><span class="flag fbad">30d stockout</span></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">CBS-CHIPS1LB</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07V3TK2KT" target="_blank">B07V3TK2KT</a></td>
+        <td>Rawhide Chips, 1 lb</td>
+        <td class="muted">Rawhide</td>
+        <td class="num">0</td>
+        <td class="num">3</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="bad">30d</span></td>
+        <td><span class="flag fbad">30d stockout</span></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">CBS-BaconRoll10"</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07JMHRWWK" target="_blank">B07JMHRWWK</a></td>
+        <td>Bacon Roll 10 in, 1 ct</td>
+        <td class="muted">Bacon Roll</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">U2-OOZC-EYB1</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BG9SLMG" target="_blank">B07BG9SLMG</a></td>
+        <td>Bacon Roll, 10 in, 6 pk</td>
+        <td class="muted">Bacon Roll</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">Q7-UROS-ZDWC</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BG9QFGG" target="_blank">B07BG9QFGG</a></td>
+        <td>Bacon Roll, 5 in</td>
+        <td class="muted">Bacon Roll</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">UB-O5E8-1PFH</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BGCDX77" target="_blank">B07BGCDX77</a></td>
+        <td>Bacon Roll, 5 in, 12 ct</td>
+        <td class="muted">Bacon Roll</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">CBS-BARNYARD-LARGE1120</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B08NQ1JJB3" target="_blank">B08NQ1JJB3</a></td>
+        <td>Barnyard Mix, lg, 17 ct</td>
+        <td class="muted">Barnyard Mix</td>
+        <td class="num">0</td>
+        <td class="num">2</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">CBS-BARNYARD-SMALL1120</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B08NQ3Q8YF" target="_blank">B08NQ3Q8YF</a></td>
+        <td>Barnyard Mix, sm, 24 ct</td>
+        <td class="muted">Barnyard Mix</td>
+        <td class="num">0</td>
+        <td class="num">3</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">NM-MX6W-DW7A</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B01LWP9GBX" target="_blank">B01LWP9GBX</a></td>
+        <td>Bully in a Blanket, 10 in</td>
+        <td class="muted">Bully</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">6Q-D5DN-B6CM</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BGTWJZC" target="_blank">B07BGTWJZC</a></td>
+        <td>Bully in a Blanket, 10 in, 6 pk</td>
+        <td class="muted">Bully</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">SQ-MJOY-9DS4</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BGQMLLX" target="_blank">B07BGQMLLX</a></td>
+        <td>Bully in a Blanket, 5 in, 12 pk</td>
+        <td class="muted">Bully</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">4O-8ZTR-W6WF</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BHWDLR6" target="_blank">B07BHWDLR6</a></td>
+        <td>Flattened Bully Stick</td>
+        <td class="muted">Bully</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">9C-CWFF-ML81</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B01LYNLU8T" target="_blank">B01LYNLU8T</a></td>
+        <td>Pig 'n' Poke, 10 in</td>
+        <td class="muted">Bully</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">LE-ZC73-E2XX</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BHW416Q" target="_blank">B07BHW416Q</a></td>
+        <td>Pig 'n' Poke, 10 in, 6 pk</td>
+        <td class="muted">Bully</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">N2-HST2-A0OG</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BHW227Q" target="_blank">B07BHW227Q</a></td>
+        <td>Swirlies Bully Sticks, 20 ct</td>
+        <td class="muted">Bully</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">KL-HUPX-EVOY</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07GSG5BPL" target="_blank">B07GSG5BPL</a></td>
+        <td>Twisted Bully Sticks, 6 in, 12 ct</td>
+        <td class="muted">Bully</td>
+        <td class="num">0</td>
+        <td class="num">1</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">4K-HDJF-K24U</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BHWZ87T" target="_blank">B07BHWZ87T</a></td>
+        <td>Twisted Bully Stick around Trachea, 6pk</td>
+        <td class="muted">Bully Sticks</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">CBS-10"BraidedBullyStick6PK</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07GSHW82K" target="_blank">B07GSHW82K</a></td>
+        <td>Twisted Bully Sticks, 10 inch (10-ct)</td>
+        <td class="muted">Bully Sticks</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">CBS-600108-COWEAR-10t-2PK</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B0813Y6YTT" target="_blank">B0813Y6YTT</a></td>
+        <td>Cow Ear, 10 ct (2)</td>
+        <td class="muted">Cow Ears</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">84-BMWP-2L1I</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07C329C3R" target="_blank">B07C329C3R</a></td>
+        <td>Bacon in a Blanket, 10 in, 6 pk</td>
+        <td class="muted">Pork Chews</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">LC-W5NL-C5F1</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07C3716KG" target="_blank">B07C3716KG</a></td>
+        <td>Bacon in a Blanket, 5 in, 12 pk</td>
+        <td class="muted">Pork Chews</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">RT-D0JW-0POP</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B01M0XMDMT" target="_blank">B01M0XMDMT</a></td>
+        <td>Pork Screw, 10 in</td>
+        <td class="muted">Pork Chews</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">OR-5OL3-PSFY</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BHTKS7X" target="_blank">B07BHTKS7X</a></td>
+        <td>Pork Screw, 10 in, 6 pk</td>
+        <td class="muted">Pork Chews</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">19-82KP-7OZN</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BH54F3Q" target="_blank">B07BH54F3Q</a></td>
+        <td>Butcher's Twist, 6 pk</td>
+        <td class="muted">Rawhide</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">CBS-GRILLERS-2Pack</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07ZQMHQQN" target="_blank">B07ZQMHQQN</a></td>
+        <td>Grillers, 12 oz (2)</td>
+        <td class="muted">Rawhide</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">CBS-TURKEYNECK</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B0954JXRQK" target="_blank">B0954JXRQK</a></td>
+        <td>Turkey Necks, 5 pk</td>
+        <td class="muted">Turkey Necks</td>
+        <td class="num">0</td>
+        <td class="num">1</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr><tr data-status="ok">
+        <td><span class="pill pill-muted">non-replen</span></td>
+        <td class="mono">2W-PWI2-0EJF</td>
+        <td class="mono"><a href="https://www.amazon.com/dp/B07BHX8HJB" target="_blank">B07BHX8HJB</a></td>
+        <td>Wind Twist, 6 in</td>
+        <td class="muted">Twist</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0</td>
+        <td class="num">0.00</td>
+        <td class="muted">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num">—</td>
+        <td class="num"><span class="muted">0</span></td>
+        <td></td>
+    </tr></tbody>
+    </table></div>
+  </section>
+
+  <section class="alt">
+    <h2 class="warn-title">Stockout Impact (last 30d) <span class="count">6</span></h2>
+    <div class="note warn">Days each SKU spent unsellable in the last 30. Estimated lost units = stockout days × 30-day velocity — a floor on how much demand the warehouse-side missed.</div>
+    <div class="scroll-x"><table>
+      <thead><tr><th>SKU</th><th>Item</th><th>Stockout Days</th><th>v30/d</th><th>Lost Units (est.)</th><th>Status</th></tr></thead>
+      <tbody><tr>
+        <td class="mono">W7-DD14-M3VA</td><td>Beef Trachea 4 in 12 pk</td>
+        <td class="num bad">30</td>
+        <td class="num">0.00</td>
+        <td class="num bad">~0</td>
+        <td><span class="pill pill-muted">non-replen</span></td></tr><tr>
+        <td class="mono">CBS-TRACHEA-3PK</td><td>Trachea, 10 in, 3 ct</td>
+        <td class="num bad">30</td>
+        <td class="num">0.00</td>
+        <td class="num bad">~0</td>
+        <td><span class="pill pill-muted">non-replen</span></td></tr><tr>
+        <td class="mono">CBS-TRACHEA-6PK</td><td>Trachea, 6 in, 6 ct</td>
+        <td class="num bad">30</td>
+        <td class="num">0.00</td>
+        <td class="num bad">~0</td>
+        <td><span class="pill pill-muted">non-replen</span></td></tr><tr>
+        <td class="mono">CBS-CHIPS1LB</td><td>Rawhide Chips, 1 lb</td>
+        <td class="num bad">30</td>
+        <td class="num">0.00</td>
+        <td class="num bad">~0</td>
+        <td><span class="pill pill-muted">non-replen</span></td></tr><tr>
+        <td class="mono">CBS-600108-COWEAR-10t</td><td>Cow Ear, 10 ct</td>
+        <td class="num bad">28</td>
+        <td class="num">0.03</td>
+        <td class="num bad">~1</td>
+        <td><span class="pill pill-warn">excess</span></td></tr><tr>
+        <td class="mono">CBS-600107-COWEAR-5ct</td><td>Cow Ear, 5 ct</td>
+        <td class="num bad">3</td>
+        <td class="num">0.63</td>
+        <td class="num bad">~2</td>
+        <td><span class="pill pill-bad">critical</span></td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Velocity Momentum (7d vs 30d) <span class="count">8</span></h2>
+    <div class="note">Largest run-rate swings. Sustained drops mean current open POs may be oversized; sustained jumps mean upcoming POs may need to be larger.</div>
+    <div class="scroll-x"><table>
+      <thead><tr><th>SKU</th><th>Item</th><th>v30/d</th><th>v7/d</th><th>Change</th><th>Rev 30d</th></tr></thead>
+      <tbody><tr>
+        <td class="mono">CBS-600108-COWEAR-10t</td><td>Cow Ear, 10 ct</td>
+        <td class="num">0.03</td>
+        <td class="num">0.00</td>
+        <td class="num bad">▼ -100%</td>
+        <td class="num">$30</td></tr><tr>
+        <td class="mono">CBS-TRACHEA-STRIPS</td><td>Trachea Strips, 6 in, 12 ct</td>
+        <td class="num">0.07</td>
+        <td class="num">0.00</td>
+        <td class="num bad">▼ -100%</td>
+        <td class="num">$319</td></tr><tr>
+        <td class="mono">CBS-TURKEYTENDON-3oz</td><td>Turkey Tendons 3 oz</td>
+        <td class="num">0.03</td>
+        <td class="num">0.00</td>
+        <td class="num bad">▼ -100%</td>
+        <td class="num">$899</td></tr><tr>
+        <td class="mono">CBS-BULLY-6IN</td><td>Bully Sticks, 6 in, 12 ct</td>
+        <td class="num">0.23</td>
+        <td class="num">0.43</td>
+        <td class="num good">▲ +87%</td>
+        <td class="num">$351</td></tr><tr>
+        <td class="mono">CBS-TURKEYTENDON-8oz</td><td>Turkey Tendons 8 oz</td>
+        <td class="num">7.10</td>
+        <td class="num">1.00</td>
+        <td class="num bad">▼ -86%</td>
+        <td class="num">$6,208</td></tr><tr>
+        <td class="mono">EM-H2D4-RLNT</td><td>Bully Spirals, 6 pk</td>
+        <td class="num">2.17</td>
+        <td class="num">0.43</td>
+        <td class="num bad">▼ -80%</td>
+        <td class="num">$2,666</td></tr><tr>
+        <td class="mono">CBS 200-CT Chicken Feet</td><td>Chicken Feet 200 ct</td>
+        <td class="num">7.13</td>
+        <td class="num">1.43</td>
+        <td class="num bad">▼ -80%</td>
+        <td class="num">$22,138</td></tr><tr>
+        <td class="mono">CBS-DUCKNECK</td><td>Duck Necks, 12 pk</td>
+        <td class="num">1.07</td>
+        <td class="num">0.29</td>
+        <td class="num bad">▼ -73%</td>
+        <td class="num">$4,517</td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section class="alt">
+    <h2 class="warn-title">Listing Alerts (last 7d) <span class="count">12</span></h2>
+    <div class="note warn">Recent ASIN change-log events that can affect demand and inventory: offer changes, listing issues, attribute updates. Pair with velocity swings to diagnose causes of inventory variance.</div>
+    <div class="scroll-x"><table>
+      <thead><tr><th>SKU</th><th>ASIN</th><th>Item</th><th>Event Types</th><th>Last Event</th></tr></thead>
+      <tbody><tr>
+        <td class="mono">CBS-DuckFeet90</td><td class="mono">B0DB3BHLR2</td>
+        <td>Duck Feet 90 ct</td><td>ANY_OFFER_CHANGED (18)</td><td>2026-04-30</td></tr><tr>
+        <td class="mono">CBS 200-CT Chicken Feet</td><td class="mono">B0C34LB478</td>
+        <td>Chicken Feet 200 ct</td><td>ANY_OFFER_CHANGED (45)</td><td>2026-04-30</td></tr><tr>
+        <td class="mono">EM-H2D4-RLNT</td><td class="mono">B07BH513XX</td>
+        <td>Bully Spirals, 6 pk</td><td>ANY_OFFER_CHANGED (8)</td><td>2026-04-25</td></tr><tr>
+        <td class="mono">CBS-TURKEYTENDON-3oz</td><td class="mono">B0CGC4SM4M</td>
+        <td>Turkey Tendons 3 oz</td><td>ANY_OFFER_CHANGED (3)</td><td>2026-04-25</td></tr><tr>
+        <td class="mono">CBS-PIGEAR30</td><td class="mono">B07GSDZP36</td>
+        <td>Pig Ear, 30 ct</td><td>ANY_OFFER_CHANGED (5)</td><td>2026-04-28</td></tr><tr>
+        <td class="mono">CBS-600107-COWEAR-5ct</td><td class="mono">B0813X1F14</td>
+        <td>Cow Ear, 5 ct</td><td>ANY_OFFER_CHANGED (5)</td><td>2026-04-29</td></tr><tr>
+        <td class="mono">CBS-DUCKNECK</td><td class="mono">B0955688S5</td>
+        <td>Duck Necks, 12 pk</td><td>ANY_OFFER_CHANGED (6)</td><td>2026-04-25</td></tr><tr>
+        <td class="mono">CBS-TURKEYTENDON-8oz</td><td class="mono">B0CGBLSL5G</td>
+        <td>Turkey Tendons 8 oz</td><td>ANY_OFFER_CHANGED (13)</td><td>2026-04-30</td></tr><tr>
+        <td class="mono">1S-KU06-MBBS</td><td class="mono">B00KAXQ1AK</td>
+        <td>Grillers 12 oz</td><td>ANY_OFFER_CHANGED (13)</td><td>2026-04-30</td></tr><tr>
+        <td class="mono">CBS-TRACHEA-STRIPS</td><td class="mono">B0954NB2HB</td>
+        <td>Trachea Strips, 6 in, 12 ct</td><td>ANY_OFFER_CHANGED (5)</td><td>2026-04-30</td></tr><tr>
+        <td class="mono">CBS-600108-COWEAR-10t</td><td class="mono">B0813X8PG2</td>
+        <td>Cow Ear, 10 ct</td><td>ANY_OFFER_CHANGED (4)</td><td>2026-04-29</td></tr><tr>
+        <td class="mono">CBS-DuckFeet30</td><td class="mono">B07BH6Q6TP</td>
+        <td>Duck Feet, 30 ct</td><td>ANY_OFFER_CHANGED (3), LISTINGS_ITEM_ISSUES_CHANGE (1)</td><td>2026-04-30</td></tr></tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Open Purchase Orders <span class="count">11</span></h2>
+    <div class="scroll-x"><table>
+      <thead><tr><th>PO #</th><th>Ref</th><th>Ordered</th><th>Expected</th><th>Units</th><th>Lines</th></tr></thead>
+      <tbody><tr class="row-overdue">
+        <td class="mono">3108</td><td>2297</td>
+        <td>2026-02-17</td><td>2026-04-10 <span class="pill pill-bad">OVERDUE 20d</span></td>
+        <td class="num">3,241</td>
+        <td><details><summary>9 lines</summary><ul class="po-lines"><li><span class='mono'>1S-KU06-MBBS</span> — Grillers 12 oz <span class='muted'>(30 units)</span></li><li><span class='mono'>CBS-BULLYBITES</span> — Bully Bites, 2-4 in, 1 lb <span class='muted'>(43 units)</span></li><li><span class='mono'>EM-H2D4-RLNT</span> — Bully Spirals, 6 pk <span class='muted'>(84 units)</span></li><li><span class='mono'>MF-LJ5T-GXD0</span> — Chicken Feet, 30 ct <span class='muted'>(984 units)</span></li><li><span class='mono'>CBS-CHICKENFT60</span> — Chicken Feet, 60 ct <span class='muted'>(758 units)</span></li><li><span class='mono'>CBS-DuckFeet30</span> — Duck Feet, 30 ct <span class='muted'>(612 units)</span></li><li><span class='mono'>CBS 200-CT Chicken Feet</span> — Chicken Feet 200 ct <span class='muted'>(418 units)</span></li><li><span class='mono'>CBS-DUCKNECK</span> — Duck Necks, 12 pk <span class='muted'>(162 units)</span></li><li><span class='mono'>CBS-DuckFeet90</span> — Duck Feet 90 ct <span class='muted'>(150 units)</span></li></ul></details></td></tr><tr class="row-overdue">
+        <td class="mono">3116</td><td>2305</td>
+        <td>2026-02-24</td><td>2026-04-17 <span class="pill pill-bad">OVERDUE 13d</span></td>
+        <td class="num">3,478</td>
+        <td><details><summary>9 lines</summary><ul class="po-lines"><li><span class='mono'>CBS 200-CT Chicken Feet</span> — Chicken Feet 200 ct <span class='muted'>(239 units)</span></li><li><span class='mono'>CBS-CHICKENFT60</span> — Chicken Feet, 60 ct <span class='muted'>(772 units)</span></li><li><span class='mono'>MF-LJ5T-GXD0</span> — Chicken Feet, 30 ct <span class='muted'>(780 units)</span></li><li><span class='mono'>CBS-DuckFeet30</span> — Duck Feet, 30 ct <span class='muted'>(1,104 units)</span></li><li><span class='mono'>CBS-DuckFeet90</span> — Duck Feet 90 ct <span class='muted'>(219 units)</span></li><li><span class='mono'>CBS-DUCKNECK</span> — Duck Necks, 12 pk <span class='muted'>(162 units)</span></li><li><span class='mono'>CBS-PIG18</span> — Pig Ear, 18 ct <span class='muted'>(78 units)</span></li><li><span class='mono'>EM-H2D4-RLNT</span> — Bully Spirals, 6 pk <span class='muted'>(84 units)</span></li><li><span class='mono'>CBS-TURKEYTENDON-8oz</span> — Turkey Tendons 8 oz <span class='muted'>(40 units)</span></li></ul></details></td></tr><tr class="row-overdue">
+        <td class="mono">3127</td><td>2315</td>
+        <td>2026-03-03</td><td>2026-04-24 <span class="pill pill-bad">OVERDUE 6d</span></td>
+        <td class="num">2,954</td>
+        <td><details><summary>8 lines</summary><ul class="po-lines"><li><span class='mono'>MF-LJ5T-GXD0</span> — Chicken Feet, 30 ct <span class='muted'>(1,038 units)</span></li><li><span class='mono'>CBS-DuckFeet30</span> — Duck Feet, 30 ct <span class='muted'>(882 units)</span></li><li><span class='mono'>CBS-TURKEYTENDON-8oz</span> — Turkey Tendons 8 oz <span class='muted'>(378 units)</span></li><li><span class='mono'>CBS-CHICKENFT60</span> — Chicken Feet, 60 ct <span class='muted'>(234 units)</span></li><li><span class='mono'>CBS-DUCKNECK</span> — Duck Necks, 12 pk <span class='muted'>(126 units)</span></li><li><span class='mono'>CBS-PIG18</span> — Pig Ear, 18 ct <span class='muted'>(108 units)</span></li><li><span class='mono'>CBS-DuckFeet90</span> — Duck Feet 90 ct <span class='muted'>(107 units)</span></li><li><span class='mono'>CBS 200-CT Chicken Feet</span> — Chicken Feet 200 ct <span class='muted'>(81 units)</span></li></ul></details></td></tr><tr class="">
+        <td class="mono">3134</td><td>2283</td>
+        <td>2026-03-10</td><td>2026-05-01</td>
+        <td class="num">685</td>
+        <td><details><summary>7 lines</summary><ul class="po-lines"><li><span class='mono'>CBS-TURKEYTENDON-8oz</span> — Turkey Tendons 8 oz <span class='muted'>(241 units)</span></li><li><span class='mono'>CBS-DuckFeet90</span> — Duck Feet 90 ct <span class='muted'>(149 units)</span></li><li><span class='mono'>CBS-DuckFeet30</span> — Duck Feet, 30 ct <span class='muted'>(90 units)</span></li><li><span class='mono'>CBS-CHICKENFT60</span> — Chicken Feet, 60 ct <span class='muted'>(77 units)</span></li><li><span class='mono'>CBS-DUCKNECK</span> — Duck Necks, 12 pk <span class='muted'>(60 units)</span></li><li><span class='mono'>CBS-600107-COWEAR-5ct</span> — Cow Ear, 5 ct <span class='muted'>(36 units)</span></li><li><span class='mono'>CBS-PIG18</span> — Pig Ear, 18 ct <span class='muted'>(32 units)</span></li></ul></details></td></tr><tr class="">
+        <td class="mono">3147</td><td>2326</td>
+        <td>2026-03-17</td><td>2026-05-08</td>
+        <td class="num">1,494</td>
+        <td><details><summary>5 lines</summary><ul class="po-lines"><li><span class='mono'>CBS-TURKEYTENDON-8oz</span> — Turkey Tendons 8 oz <span class='muted'>(398 units)</span></li><li><span class='mono'>CBS-DuckFeet90</span> — Duck Feet 90 ct <span class='muted'>(362 units)</span></li><li><span class='mono'>CBS-CHICKENFT60</span> — Chicken Feet, 60 ct <span class='muted'>(362 units)</span></li><li><span class='mono'>CBS-DuckFeet30</span> — Duck Feet, 30 ct <span class='muted'>(312 units)</span></li><li><span class='mono'>1S-KU06-MBBS</span> — Grillers 12 oz <span class='muted'>(60 units)</span></li></ul></details></td></tr><tr class="">
+        <td class="mono">3155</td><td>2334</td>
+        <td>2026-03-24</td><td>2026-05-22</td>
+        <td class="num">4,473</td>
+        <td><details><summary>7 lines</summary><ul class="po-lines"><li><span class='mono'>CBS-DuckFeet30</span> — Duck Feet, 30 ct <span class='muted'>(1,158 units)</span></li><li><span class='mono'>CBS-PIGEAR30</span> — Pig Ear, 30 ct <span class='muted'>(1,117 units)</span></li><li><span class='mono'>CBS-CHICKENFT60</span> — Chicken Feet, 60 ct <span class='muted'>(1,158 units)</span></li><li><span class='mono'>CBS-TURKEYTENDON-8oz</span> — Turkey Tendons 8 oz <span class='muted'>(290 units)</span></li><li><span class='mono'>CBS-DuckFeet90</span> — Duck Feet 90 ct <span class='muted'>(285 units)</span></li><li><span class='mono'>CBS 200-CT Chicken Feet</span> — Chicken Feet 200 ct <span class='muted'>(285 units)</span></li><li><span class='mono'>1S-KU06-MBBS</span> — Grillers 12 oz <span class='muted'>(180 units)</span></li></ul></details></td></tr><tr class="">
+        <td class="mono">3162</td><td>2340</td>
+        <td>2026-03-31</td><td>2026-05-29</td>
+        <td class="num">771</td>
+        <td><details><summary>4 lines</summary><ul class="po-lines"><li><span class='mono'>CBS-PIGEAR30</span> — Pig Ear, 30 ct <span class='muted'>(348 units)</span></li><li><span class='mono'>CBS-CHICKENFT60</span> — Chicken Feet, 60 ct <span class='muted'>(348 units)</span></li><li><span class='mono'>YL-3U59-R0FN</span> — Pig Ear Strips, 1 lb <span class='muted'>(57 units)</span></li><li><span class='mono'>CBS-BULLY-10IN</span> — Bully Sticks, 10 in, 6 ct <span class='muted'>(18 units)</span></li></ul></details></td></tr><tr class="">
+        <td class="mono">3172</td><td>2349</td>
+        <td>2026-04-08</td><td>2026-06-06</td>
+        <td class="num">9,170</td>
+        <td><details><summary>8 lines</summary><ul class="po-lines"><li><span class='mono'>CBS-PIGEAR30</span> — Pig Ear, 30 ct <span class='muted'>(3,738 units)</span></li><li><span class='mono'>CBS-CHICKENFT60</span> — Chicken Feet, 60 ct <span class='muted'>(300 units)</span></li><li><span class='mono'>MF-LJ5T-GXD0</span> — Chicken Feet, 30 ct <span class='muted'>(2,466 units)</span></li><li><span class='mono'>CBS-TURKEYTENDON-8oz</span> — Turkey Tendons 8 oz <span class='muted'>(92 units)</span></li><li><span class='mono'>CBS-DuckFeet90</span> — Duck Feet 90 ct <span class='muted'>(2,462 units)</span></li><li><span class='mono'>CBS-BULLYBITES</span> — Bully Bites, 2-4 in, 1 lb <span class='muted'>(46 units)</span></li><li><span class='mono'>CBS-CHIPS5LB</span> — Rawhide Chips, 3 lb <span class='muted'>(38 units)</span></li><li><span class='mono'>CBS-600107-COWEAR-5ct</span> — Cow Ear, 5 ct <span class='muted'>(28 units)</span></li></ul></details></td></tr><tr class="">
+        <td class="mono">3185</td><td>2362</td>
+        <td>2026-04-14</td><td>2026-06-12</td>
+        <td class="num">1,400</td>
+        <td><details><summary>5 lines</summary><ul class="po-lines"><li><span class='mono'>MF-LJ5T-GXD0</span> — Chicken Feet, 30 ct <span class='muted'>(798 units)</span></li><li><span class='mono'>CBS-PIGEAR30</span> — Pig Ear, 30 ct <span class='muted'>(278 units)</span></li><li><span class='mono'>CBS-CHICKENFT60</span> — Chicken Feet, 60 ct <span class='muted'>(278 units)</span></li><li><span class='mono'>YL-3U59-R0FN</span> — Pig Ear Strips, 1 lb <span class='muted'>(34 units)</span></li><li><span class='mono'>CBS-BULLYBITES</span> — Bully Bites, 2-4 in, 1 lb <span class='muted'>(12 units)</span></li></ul></details></td></tr><tr class="">
+        <td class="mono">3195</td><td>2371</td>
+        <td>2026-04-21</td><td>2026-06-19</td>
+        <td class="num">2,069</td>
+        <td><details><summary>7 lines</summary><ul class="po-lines"><li><span class='mono'>CBS-PIGEAR30</span> — Pig Ear, 30 ct <span class='muted'>(863 units)</span></li><li><span class='mono'>CBS-CHICKENFT60</span> — Chicken Feet, 60 ct <span class='muted'>(863 units)</span></li><li><span class='mono'>CBS-PIGEAR-6ct</span> — Pig Ear, 6 ct <span class='muted'>(100 units)</span></li><li><span class='mono'>EM-H2D4-RLNT</span> — Bully Spirals, 6 pk <span class='muted'>(90 units)</span></li><li><span class='mono'>YL-3U59-R0FN</span> — Pig Ear Strips, 1 lb <span class='muted'>(59 units)</span></li><li><span class='mono'>CBS-BULLYBITES</span> — Bully Bites, 2-4 in, 1 lb <span class='muted'>(46 units)</span></li><li><span class='mono'>CBS-600107-COWEAR-5ct</span> — Cow Ear, 5 ct <span class='muted'>(48 units)</span></li></ul></details></td></tr><tr class="">
+        <td class="mono">3205</td><td>2379</td>
+        <td>2026-04-29</td><td>2026-06-27</td>
+        <td class="num">1,881</td>
+        <td><details><summary>7 lines</summary><ul class="po-lines"><li><span class='mono'>MF-LJ5T-GXD0</span> — Chicken Feet, 30 ct <span class='muted'>(1,320 units)</span></li><li><span class='mono'>CBS-PIGEAR30</span> — Pig Ear, 30 ct <span class='muted'>(164 units)</span></li><li><span class='mono'>CBS-CHICKENFT60</span> — Chicken Feet, 60 ct <span class='muted'>(164 units)</span></li><li><span class='mono'>CBS-PIGEAR-6ct</span> — Pig Ear, 6 ct <span class='muted'>(116 units)</span></li><li><span class='mono'>YL-3U59-R0FN</span> — Pig Ear Strips, 1 lb <span class='muted'>(51 units)</span></li><li><span class='mono'>CBS-BULLY-10IN</span> — Bully Sticks, 10 in, 6 ct <span class='muted'>(42 units)</span></li><li><span class='mono'>CBS-BULLYBITES</span> — Bully Bites, 2-4 in, 1 lb <span class='muted'>(24 units)</span></li></ul></details></td></tr></tbody>
+    </table></div>
+    <div class="note warn" style="margin-top:14px"><b>Stale draft PO:</b> #1992 (ref 1482) — created 2024-04-23. Submit, repurpose, or close.</div>
+  </section>
+
+  <div class="footer">
+    <div>Generated 2026-04-30 17:38 · Internal use</div>
+    <div><span class="brand">Brand's Best Friend</span> · Cheddy Inc.</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const tabs = document.querySelectorAll('.tab');
+  const rows = document.querySelectorAll('#full-tbl tbody tr');
+  tabs.forEach(t => t.addEventListener('click', () => {
+    tabs.forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const f = t.dataset.filter;
+    rows.forEach(r => {
+      r.style.display = (f === 'all' || r.dataset.status === f) ? '' : 'none';
+    });
+  }));
+})();
+</script>
+</body></html>
