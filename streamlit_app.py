@@ -27,15 +27,44 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Hide Streamlit's default chrome so the embedded webapp feels like the
-# whole page. The "Made with Streamlit" footer + hamburger menu would
-# otherwise sit next to our brand header and look messy.
+# Strip Streamlit's chrome and force the iframe to fill the viewport
+# edge-to-edge. The embedded webapp does its own internal centering
+# (max-width: 1300px on .page), so it'll look identical to opening the
+# raw index.html in a browser tab.
 st.markdown(
     """
     <style>
-      #MainMenu, footer, header {visibility: hidden;}
-      .block-container {padding: 0 !important; max-width: 100% !important;}
-      iframe {border: 0 !important;}
+      /* Hide Streamlit menu + footer + branded header. */
+      #MainMenu, footer, header { visibility: hidden; height: 0; }
+
+      /* Kill the centered narrow-column container so the iframe
+         can stretch all the way across. Different Streamlit versions
+         use different data-testid + class names, so we target several. */
+      .main .block-container,
+      .stMain .block-container,
+      [data-testid="stMain"] .block-container,
+      .stMainBlockContainer,
+      [data-testid="stMainBlockContainer"] {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .stApp { background: #FFFFFF; }
+
+      /* Make any iframe component fill its row. */
+      [data-testid="stIFrame"],
+      [data-testid="stComponent"],
+      [data-testid="stHtml"] {
+        width: 100% !important;
+      }
+      [data-testid="stIFrame"] iframe,
+      [data-testid="stComponent"] iframe,
+      [data-testid="stHtml"] iframe,
+      iframe {
+        width: 100% !important;
+        border: 0 !important;
+        display: block !important;
+      }
     </style>
     """,
     unsafe_allow_html=True,
