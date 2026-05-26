@@ -42,11 +42,14 @@ st.markdown(
 )
 
 # Render the static webapp_prototype inside an iframe component. The URL
-# MUST be "/app/static/index.html" (absolute) — not "./static/index.html"
-# — because Streamlit's own SPA shell lives at /static/, and a relative
-# "./static/" path collides with that. Pointing at /app/static/ uses the
-# enableStaticServing-exposed user directory instead.
+# is "app/static/index.html" — RELATIVE, no leading slash — so it works
+# in both contexts:
+#   - localhost:8501/        → app/static/...  →  /app/static/index.html
+#   - private cloud /~/+/    → app/static/...  →  /~/+/app/static/index.html
+# An absolute "/app/static/..." would bypass Cloud's private-app /~/+/
+# prefix and hit the unauthenticated auth gate (303 → 404).
+# A "./static/..." would collide with Streamlit's own SPA at /static/.
 st.iframe(
-    "/app/static/index.html",
+    "app/static/index.html",
     height=1600,
 )
